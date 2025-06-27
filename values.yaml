@@ -1,0 +1,89 @@
+nameOverride: ""
+fullnameOverride: ""
+# Default values for aviso-server
+replicaCount: 1
+
+image:
+  repository: eccr.ecmwf.int/aviso/aviso_server
+  pullPolicy: Always
+  tag: "0.1.1"
+
+# Image pull secrets for private registry
+imagePullSecrets:
+  enabled: false
+  # Set to true and provide credentials for private registry access
+  registry: eccr.ecmwf.int
+  username: ""
+  password: ""
+
+service:
+  type: ClusterIP
+  port: 8000
+  targetPort: 8000
+
+# Ingress configuration
+ingress:
+  enabled: false
+
+# Horizontal Pod Autoscaler configuration
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 50
+  targetMemoryUtilizationPercentage: 50
+
+# Resource limits and requests
+# This values will be tweaked after performance testing
+resources:
+  limits:
+    cpu: 4000m
+    memory: 4Gi
+  requests:
+    cpu: 1000m
+    memory: 1Gi
+
+# Liveness and readiness probes
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+# Application configuration
+config:
+  application:
+    host: "0.0.0.0"
+    port: 8000
+    base_url: "http://aviso-server" # Necessary for cloudevent building
+    static_files_path: "/app/static" # Location of static files in the container
+  
+  watch_endpoint:
+    sse_heartbeat_interval_sec: 30
+    connection_max_duration_sec: 3600
+    replay_batch_size: 100
+    max_historical_notifications: 10000
+    replay_batch_delay_ms: 0
+    concurrent_notification_processing: 20
+  
+  notification_backend:
+    kind: in_memory
+    in_memory:
+      max_history_per_topic: 1
+      max_topics: 10000
+      enable_metrics: true
+  
+  logging:
+    level: info
+    format: bunyan
+
+nats:
+  enabled: false
