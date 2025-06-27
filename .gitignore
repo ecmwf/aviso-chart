@@ -1,0 +1,26 @@
+# Chart dependencies (downloaded by `helm dependency build`)
+/charts/
+**/charts/*.tgz
+
+# Helm test output and temp files
+/tests/
+/tmp/
+
+# MacOS-specific ignores
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# JetBrains IDE files
+.idea/
+*.iml
+modules.xml
+
+# Other IDE and editor files
+.vscode/
+*.swp
+*.swo
+
+# General temp files
+temp/
