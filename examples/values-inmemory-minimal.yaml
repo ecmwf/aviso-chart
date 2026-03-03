@@ -1,0 +1,8 @@
+# Minimal in-memory profile with no external dependencies.
+config:
+  notification_backend:
+    kind: in_memory
+    in_memory:
+      max_history_per_topic: 1
+      max_topics: 5000
+      enable_metrics: false
