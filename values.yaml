@@ -29,6 +29,8 @@ service:
   type: ClusterIP
   port: 8000
   targetPort: 8000
+  # Optional annotations on the aviso Service resource.
+  annotations: {}
 
 # Pod-level Kubernetes controls. Keep empty in base chart; override per environment.
 podAnnotations: {}
@@ -141,6 +143,18 @@ config:
     format: json
 
 # Optional bundled official NATS chart (default off; prefer explicit overrides).
+# You can annotate subchart resources via official chart merge/patch points, for example:
+# nats:
+#   podTemplate:
+#     merge:
+#       metadata:
+#         annotations:
+#           key: value
+#   service:
+#     merge:
+#       metadata:
+#         annotations:
+#           key: value
 # When enabled for local/dev JetStream, override at least:
 # nats:
 #   enabled: true

@@ -1,0 +1,28 @@
+# Generic resource annotations example.
+# These keys are only examples; replace with the annotations required by your log pipeline.
+
+podAnnotations:
+  opensearch.org/include: "true"
+  opensearch.org/service.name: "aviso"
+
+service:
+  annotations:
+    opensearch.org/include: "true"
+    opensearch.org/service.name: "aviso"
+
+# For bundled NATS subchart resources, use official merge points.
+nats:
+  enabled: true
+  podTemplate:
+    merge:
+      metadata:
+        annotations:
+          opensearch.org/include: "true"
+          opensearch.org/service.name: "aviso"
+
+  service:
+    merge:
+      metadata:
+        annotations:
+          opensearch.org/include: "true"
+          opensearch.org/service.name: "aviso"
