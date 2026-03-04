@@ -1,0 +1,33 @@
+# Bundled official NATS subchart profile for local/dev environments.
+# Replace RELEASE_NAME in nats_url with your Helm release name.
+
+nats:
+  enabled: true
+  config:
+    jetstream:
+      enabled: true
+      fileStore:
+        enabled: true
+        pvc:
+          enabled: true
+          size: 10Gi
+
+config:
+  notification_backend:
+    kind: jetstream
+    jetstream:
+      nats_url: "nats://RELEASE_NAME-nats:4222"
+      timeout_seconds: 30
+      retry_attempts: 10
+      max_messages: 500000
+      max_bytes: 2147483648
+      retention_time: "7d"
+      storage_type: file
+      replicas: 1
+      retention_policy: limits
+      discard_policy: old
+      enable_auto_reconnect: true
+      max_reconnect_attempts: 10
+      reconnect_delay_ms: 1000
+      publish_retry_attempts: 3
+      publish_retry_base_delay_ms: 50

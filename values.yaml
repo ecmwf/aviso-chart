@@ -1,17 +1,26 @@
+# Optional name overrides. Leave empty for release-based naming.
 nameOverride: ""
 fullnameOverride: ""
-# Default values for aviso-server
+
+# Base deployment size. Keep minimal in chart defaults; scale via overrides.
 replicaCount: 1
 
+# Container image for aviso-server.
 image:
   repository: eccr.ecmwf.int/aviso/aviso_server
-  pullPolicy: Always
-  tag: "0.1.1"
+  # Use IfNotPresent for stable clusters; switch to Always in rapid dev loops.
+  pullPolicy: IfNotPresent
+  tag: "0.2.0"
 
-# Image pull secrets for private registry
+# Private registry credentials (disabled by default).
+# Example override:
+# imagePullSecrets:
+#   enabled: true
+#   registry: eccr.ecmwf.int
+#   username: <user>
+#   password: <token>
 imagePullSecrets:
   enabled: false
-  # Set to true and provide credentials for private registry access
   registry: eccr.ecmwf.int
   username: ""
   password: ""
@@ -21,29 +30,52 @@ service:
   port: 8000
   targetPort: 8000
 
-# Ingress configuration
+# Pod-level Kubernetes controls. Keep empty in base chart; override per environment.
+podAnnotations: {}
+podSecurityContext: {}
+securityContext: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Ingress is opt-in. Configure host/TLS in your override values.
+# Example override:
+# ingress:
+#   enabled: true
+#   className: nginx
+#   hosts:
+#     - host: aviso.example.com
+#       paths:
+#         - path: /
+#           pathType: Prefix
 ingress:
   enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: aviso.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
 
-# Horizontal Pod Autoscaler configuration
+# Horizontal Pod Autoscaler. Disabled by default for predictable baseline behavior.
 autoscaling:
-  enabled: true
+  enabled: false
   minReplicas: 1
   maxReplicas: 10
-  targetCPUUtilizationPercentage: 50
-  targetMemoryUtilizationPercentage: 50
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
 
-# Resource limits and requests
-# This values will be tweaked after performance testing
+# Conservative default resources for a single-replica baseline.
 resources:
   limits:
-    cpu: 4000m
-    memory: 4Gi
+    cpu: 2000m
+    memory: 2Gi
   requests:
-    cpu: 1000m
-    memory: 1Gi
+    cpu: 500m
+    memory: 512Mi
 
-# Liveness and readiness probes
 livenessProbe:
   httpGet:
     path: /health
@@ -58,32 +90,67 @@ readinessProbe:
   initialDelaySeconds: 5
   periodSeconds: 5
 
-# Application configuration
+# Raw aviso-server configuration rendered into config.yaml.
 config:
   application:
     host: "0.0.0.0"
     port: 8000
-    base_url: "http://aviso-server" # Necessary for cloudevent building
-    static_files_path: "/app/static" # Location of static files in the container
-  
+    # Used in generated CloudEvents source/schema URLs.
+    base_url: "http://aviso-server"
+    static_files_path: "/app/static"
+
+  # Keep these aligned with aviso-server runtime defaults.
   watch_endpoint:
     sse_heartbeat_interval_sec: 30
     connection_max_duration_sec: 3600
     replay_batch_size: 100
     max_historical_notifications: 10000
-    replay_batch_delay_ms: 0
-    concurrent_notification_processing: 20
-  
+    replay_batch_delay_ms: 100
+    concurrent_notification_processing: 15
+
   notification_backend:
+    # Base chart default: in-memory backend.
     kind: in_memory
     in_memory:
       max_history_per_topic: 1
       max_topics: 10000
-      enable_metrics: true
-  
+      enable_metrics: false
+
+    # External JetStream example (override file):
+    # kind: jetstream
+    # jetstream:
+    #   nats_url: "nats://nats:4222"
+    #   timeout_seconds: 30
+    #   retry_attempts: 10
+    #   max_messages: 500000
+    #   max_bytes: 2147483648
+    #   retention_time: "7d"
+    #   storage_type: file
+    #   replicas: 1
+    #   retention_policy: limits
+    #   discard_policy: old
+    #   enable_auto_reconnect: true
+    #   max_reconnect_attempts: 10
+    #   reconnect_delay_ms: 1000
+    #   publish_retry_attempts: 3
+    #   publish_retry_base_delay_ms: 50
+
   logging:
     level: info
-    format: bunyan
+    # Compatibility field in aviso-server. Runtime output is structured JSON.
+    format: json
 
+# Optional bundled official NATS chart (default off; prefer explicit overrides).
+# When enabled for local/dev JetStream, override at least:
+# nats:
+#   enabled: true
+#   config:
+#     jetstream:
+#       enabled: true
+#       fileStore:
+#         enabled: true
+#         pvc:
+#           enabled: true
+#           size: 10Gi
 nats:
   enabled: false

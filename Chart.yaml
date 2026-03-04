@@ -3,7 +3,7 @@ name: aviso-chart
 description: A Helm chart for Aviso Server - streaming notification service
 type: application
 version: 0.1.0
-appVersion: "0.1.1"
+appVersion: "0.2.0"
 keywords:
   - notifications
   - streaming
@@ -22,6 +22,6 @@ home: https://github.com/ecmwf/aviso-server
 
 dependencies:
   - name: nats
-    version: 9.0.20
-    repository: https://charts.bitnami.com/bitnami
+    version: 2.12.4
+    repository: https://nats-io.github.io/k8s/helm/charts/
     condition: nats.enabled
