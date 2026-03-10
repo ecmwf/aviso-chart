@@ -142,6 +142,22 @@ config:
     # Compatibility field in aviso-server. Runtime output is structured JSON.
     format: json
 
+  # Schema-backed event types can be provided via overrides under:
+  # config.notification_schema.<event_type>.identifier.<field>
+  # Each identifier field now uses:
+  #   description: Optional human-readable text exposed by /api/v1/schema
+  #   rules:       List of validation rules for that field
+  # Example:
+  # notification_schema:
+  #   my_event:
+  #     identifier:
+  #       region:
+  #         description: "Geographic region label."
+  #         rules:
+  #           - type: EnumHandler
+  #             values: ["north", "south"]
+  #             required: true
+
 # Optional bundled official NATS chart (default off; prefer explicit overrides).
 # You can annotate subchart resources via official chart merge/patch points, for example:
 # nats:
