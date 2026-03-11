@@ -10,7 +10,7 @@ image:
   repository: eccr.ecmwf.int/aviso/aviso_server
   # Use IfNotPresent for stable clusters; switch to Always in rapid dev loops.
   pullPolicy: IfNotPresent
-  tag: "0.2.0"
+  tag: "0.3.2"
 
 # Private registry credentials (disabled by default).
 # Example override:
@@ -144,19 +144,20 @@ config:
 
   # Schema-backed event types can be provided via overrides under:
   # config.notification_schema.<event_type>.identifier.<field>
-  # Each identifier field now uses:
+  # Each identifier field now uses a flat object:
   #   description: Optional human-readable text exposed by /api/v1/schema
-  #   rules:       List of validation rules for that field
+  #   type:        Validation handler type (for example EnumHandler)
+  #   required:    Whether the field is required
+  #   <handler fields>: Handler-specific options (for example values, range, max_length)
   # Example:
   # notification_schema:
   #   my_event:
   #     identifier:
   #       region:
   #         description: "Geographic region label."
-  #         rules:
-  #           - type: EnumHandler
-  #             values: ["north", "south"]
-  #             required: true
+  #         type: EnumHandler
+  #         values: ["north", "south"]
+  #         required: true
 
 # Optional bundled official NATS chart (default off; prefer explicit overrides).
 # You can annotate subchart resources via official chart merge/patch points, for example:
