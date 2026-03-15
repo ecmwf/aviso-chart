@@ -1,0 +1,60 @@
+# Auth-enabled profile with bundled auth-o-tron.
+# Replace RELEASE_NAME with your Helm release name.
+#
+# Prerequisites:
+#   kubectl create secret generic aviso-auth-secret \
+#     --from-literal=jwt-secret=your-shared-secret
+
+auth-o-tron:
+  enabled: true
+
+# Inject jwt_secret from a Kubernetes Secret (not in ConfigMap).
+extraEnv:
+  - name: AVISOSERVER_AUTH__JWT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: aviso-auth-secret
+        key: jwt-secret
+
+config:
+  auth:
+    enabled: true
+    mode: direct
+    auth_o_tron_url: "http://RELEASE_NAME-auth-o-tron:8080"
+    admin_roles:
+      localrealm: ["admin"]
+    timeout_ms: 5000
+
+  metrics:
+    enabled: true
+    host: "0.0.0.0"
+    port: 9090
+    serviceMonitor:
+      enabled: true
+      interval: 30s
+      labels:
+        release: prometheus
+
+  # Example authenticated schema with read/write role separation.
+  # notification_schema:
+  #   mars:
+  #     payload:
+  #       required: false
+  #     topic:
+  #       base: "mars"
+  #       key_order: ["class", "date"]
+  #     auth:
+  #       required: true
+  #       read_roles:
+  #         localrealm: ["*"]
+  #       write_roles:
+  #         localrealm: ["producer"]
+  #     identifier:
+  #       class:
+  #         type: StringHandler
+  #         max_length: 2
+  #         required: true
+  #       date:
+  #         type: DateHandler
+  #         canonical_format: "%Y%m%d"
+  #         required: false

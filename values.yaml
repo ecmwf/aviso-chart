@@ -92,6 +92,23 @@ readinessProbe:
   initialDelaySeconds: 5
   periodSeconds: 5
 
+# Extra environment variables injected into the aviso-server container.
+# Use this for secrets that should not live in the ConfigMap.
+# Aviso supports AVISOSERVER_* env overrides on top of the config file.
+# Example:
+# extraEnv:
+#   - name: AVISOSERVER_AUTH__JWT_SECRET
+#     valueFrom:
+#       secretKeyRef:
+#         name: aviso-auth-secret
+#         key: jwt-secret
+#   - name: AVISOSERVER_NOTIFICATION_BACKEND__JETSTREAM__TOKEN
+#     valueFrom:
+#       secretKeyRef:
+#         name: aviso-nats-secret
+#         key: token
+extraEnv: []
+
 # Raw aviso-server configuration rendered into config.yaml.
 config:
   application:
@@ -142,6 +159,46 @@ config:
     # Compatibility field in aviso-server. Runtime output is structured JSON.
     format: json
 
+  # Authentication and authorization (disabled by default).
+  # When enabled, admin endpoints always require auth + admin_roles.
+  # Stream endpoints enforce auth only when the schema sets auth.required: true.
+  # jwt_secret must be injected via extraEnv (AVISOSERVER_AUTH__JWT_SECRET) — not here.
+  # Example override:
+  # auth:
+  #   enabled: true
+  #   mode: direct
+  #   auth_o_tron_url: "http://RELEASE_NAME-auth-o-tron:8080"
+  #   admin_roles:
+  #     localrealm: ["admin"]
+  #   timeout_ms: 5000
+  auth:
+    enabled: false
+    mode: direct
+    auth_o_tron_url: ""
+    admin_roles: {}
+    timeout_ms: 5000
+
+  # Prometheus metrics endpoint (disabled by default).
+  # Runs on a separate internal port. In Kubernetes, set host to "0.0.0.0" so the
+  # service port can reach the metrics server inside the pod.
+  # Example override:
+  # metrics:
+  #   enabled: true
+  #   host: "0.0.0.0"
+  #   port: 9090
+  metrics:
+    enabled: false
+    # host: "127.0.0.1"
+    # port: 9090
+    # ServiceMonitor for Prometheus Operator discovery.
+    # Requires metrics.enabled=true and a metrics port.
+    serviceMonitor:
+      enabled: false
+      # interval: 30s
+      # scrapeTimeout: 10s
+      # Extra labels to match your Prometheus selector (e.g., release: prometheus).
+      # labels: {}
+
   # Schema-backed event types can be provided via overrides under:
   # config.notification_schema.<event_type>.identifier.<field>
   # Each identifier field now uses a flat object:
@@ -184,4 +241,19 @@ config:
 #           enabled: true
 #           size: 10Gi
 nats:
+  enabled: false
+
+# Optional bundled auth-o-tron subchart (default off).
+# When enabled, set config.auth.auth_o_tron_url to the in-cluster service URL:
+#   config.auth.auth_o_tron_url: "http://RELEASE_NAME-auth-o-tron:8080"
+# Override auth-o-tron-chart values under this key, for example:
+# auth-o-tron:
+#   enabled: true
+#   config:
+#     users:
+#       - username: admin
+#         password: admin
+#         roles:
+#           localrealm: ["admin"]
+auth-o-tron:
   enabled: false
