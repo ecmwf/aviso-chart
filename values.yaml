@@ -10,7 +10,7 @@ image:
   repository: eccr.ecmwf.int/aviso/aviso_server
   # Use IfNotPresent for stable clusters; switch to Always in rapid dev loops.
   pullPolicy: IfNotPresent
-  tag: "0.3.2"
+  tag: "0.4.0"
 
 # Private registry credentials (disabled by default).
 # Example override:

@@ -3,7 +3,7 @@ name: aviso-chart
 description: A Helm chart for Aviso Server - streaming notification service
 type: application
 version: 0.3.0
-appVersion: "0.3.2"
+appVersion: "0.4.0"
 keywords:
   - notifications
   - streaming
