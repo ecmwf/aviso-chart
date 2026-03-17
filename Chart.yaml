@@ -26,7 +26,7 @@ dependencies:
     repository: https://nats-io.github.io/k8s/helm/charts/
     condition: nats.enabled
   - name: auth-o-tron-chart
-    version: 0.2.0
+    version: 0.3.0
     repository: oci://eccr.ecmwf.int/auth-o-tron
     condition: auth-o-tron.enabled
     alias: auth-o-tron

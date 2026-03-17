@@ -250,10 +250,27 @@ nats:
 # auth-o-tron:
 #   enabled: true
 #   config:
-#     users:
-#       - username: admin
-#         password: admin
+#     version: "2.0.0"
+#     providers:
+#       - name: "plain-provider"
+#         type: "plain"
+#         realm: "localrealm"
+#         users:
+#           - username: admin
+#             password: admin
+#     augmenters:
+#       - name: "plain-role-augmenter"
+#         type: "plain"
+#         realm: "localrealm"
 #         roles:
-#           localrealm: ["admin"]
+#           admin: ["admin"]
+#   # Enable Prometheus metrics and ServiceMonitor for auth-o-tron.
+#   metrics:
+#     enabled: true
+#     port: 9090
+#     serviceMonitor:
+#       enabled: true
+#       interval: 30s
+#       scrapeTimeout: 10s
 auth-o-tron:
   enabled: false
