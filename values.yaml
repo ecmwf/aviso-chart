@@ -92,6 +92,14 @@ readinessProbe:
   initialDelaySeconds: 5
   periodSeconds: 5
 
+# Shared JWT secret for aviso and auth-o-tron (disabled by default).
+# When enabled, creates a Kubernetes Secret that both services can reference via extraEnv.
+# The secret name must match the secretKeyRef entries in extraEnv below.
+authSecret:
+  enabled: false
+  name: "aviso-auth-secret"
+  jwtSecret: ""
+
 # Extra environment variables injected into the aviso-server container.
 # Use this for secrets that should not live in the ConfigMap.
 # Aviso supports AVISOSERVER_* env overrides on top of the config file.
