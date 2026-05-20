@@ -1,0 +1,24 @@
+{{- if and .Values.config.metrics .Values.config.metrics.enabled .Values.config.metrics.port .Values.config.metrics.serviceMonitor .Values.config.metrics.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "aviso-server.fullname" . }}
+  labels:
+    {{- include "aviso-server.labels" . | nindent 4 }}
+    {{- with .Values.config.metrics.serviceMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "aviso-server.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: metrics
+      path: /metrics
+      {{- with .Values.config.metrics.serviceMonitor.interval }}
+      interval: {{ . }}
+      {{- end }}
+      {{- with .Values.config.metrics.serviceMonitor.scrapeTimeout }}
+      scrapeTimeout: {{ . }}
+      {{- end }}
+{{- end }}

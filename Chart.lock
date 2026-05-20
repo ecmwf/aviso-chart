@@ -2,5 +2,8 @@ dependencies:
 - name: nats
   repository: https://nats-io.github.io/k8s/helm/charts/
   version: 2.12.4
-digest: sha256:bc21cb297e39e50c0f318e1dc62b5e226e3b47d0ffa17ffb486db1fee520dc9c
-generated: "2026-03-04T00:28:21.095739706+01:00"
+- name: auth-o-tron-chart
+  repository: oci://eccr.ecmwf.int/auth-o-tron
+  version: 0.3.0
+digest: sha256:897eb79897e6e9002079634b8608d97aa2fcb97cdccbf87ea4c8d41d683cbc7b
+generated: "2026-03-18T00:02:32.825278+01:00"

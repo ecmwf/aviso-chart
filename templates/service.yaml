@@ -15,5 +15,11 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    {{- if and .Values.config.metrics .Values.config.metrics.enabled .Values.config.metrics.port }}
+    - port: {{ .Values.config.metrics.port }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+    {{- end }}
   selector:
     {{- include "aviso-server.selectorLabels" . | nindent 4 }}
