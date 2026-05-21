@@ -110,6 +110,33 @@ config:
 
 See [`examples/values-ecpds-enabled.yaml`](examples/values-ecpds-enabled.yaml) and the [ECPDS authorization docs](https://github.com/ecmwf/aviso-server/blob/main/docs/src/authentication.md#ecpds-destination-authorization).
 
+### Strict schema enforcement (server 0.6.0+)
+
+`aviso-server` `0.6.0` rejects any `event_type` that is not declared in `config.notification_schema` with `400 UNKNOWN_EVENT_TYPE` on `/notification`, `/watch`, and `/replay`. This is the **default behavior** whenever the schema contains at least one entry; no opt-in is required.
+
+The behavior is controlled by `config.notification_schema_strict`:
+
+| `config.notification_schema` | `config.notification_schema_strict` | Effective behavior |
+|---|---|---|
+| non-empty               | unset           | **strict** — unknown event types rejected |
+| empty / absent          | unset           | permissive generic fallback (dev convenience) |
+| any                     | `true`          | strict — with no schema this is deny-all |
+| any                     | `false`         | permissive generic fallback (legacy mode; server emits a startup warning when the schema is non-empty) |
+
+The error body lists the allowed event types so callers can self-correct:
+
+```json
+{
+  "code": "UNKNOWN_EVENT_TYPE",
+  "error": "unknown_event_type",
+  "message": "unknown event type 'X'",
+  "configured_event_types": ["dissemination", "mars", "test_polygon"],
+  "request_id": "<uuid>"
+}
+```
+
+The field is silently ignored by older server versions (`<= 0.5.x`); it is safe to set it in shared overlays.
+
 ## Image flavors
 
 The published image normally ships in two flavors:

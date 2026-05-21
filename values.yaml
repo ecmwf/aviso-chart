@@ -271,6 +271,18 @@ config:
   #   connect_timeout_seconds: 5
   #   partial_outage_policy: strict   # strict | any_success
 
+  # Reject requests whose event_type is not in notification_schema.
+  # When unset, aviso-server >= 0.6.0 derives:
+  #   - true  when notification_schema has at least one entry (secure default)
+  #   - false when notification_schema is empty or absent (legacy generic
+  #     fallback for development setups)
+  # Set explicitly to:
+  #   - true  with no schema -> deny-all "drain" mode
+  #   - false with a schema  -> preserve the legacy permissive behavior on
+  #     0.6.0+. A startup warning is emitted in that case.
+  # On older server versions (<= 0.5.x) this field is silently ignored.
+  # notification_schema_strict: true
+
   # Schema-backed event types can be provided via overrides under:
   # config.notification_schema.<event_type>
   #
