@@ -2,8 +2,8 @@ apiVersion: v2
 name: aviso-chart
 description: A Helm chart for Aviso Server - streaming notification service
 type: application
-version: 0.4.0
-appVersion: "0.5.0"
+version: 0.5.0
+appVersion: "0.6.0"
 keywords:
   - notifications
   - streaming
