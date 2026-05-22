@@ -89,7 +89,7 @@ metrics:
 
 ### ECPDS destination-authorization plugin
 
-Opt-in per stream via `auth.plugins: ["ecpds"]` in the schema. Plugin-wide settings (servers, cache, timeouts) live under `config.ecpds`. Credentials are HTTP Basic auth against the ECPDS API — never put them in the values file; inject them via `extraEnv` from a Kubernetes Secret:
+Opt-in per stream via `auth.plugins: ["ecpds"]` in the schema. Plugin-wide settings (servers, cache, timeouts) live under `config.ecpds`. Credentials are HTTP Basic auth against the ECPDS API. Never put them in the values file; inject them via `extraEnv` from a Kubernetes Secret:
 
 ```yaml
 extraEnv:
@@ -118,9 +118,9 @@ The behavior is controlled by `config.notification_schema_strict`:
 
 | `config.notification_schema` | `config.notification_schema_strict` | Effective behavior |
 |---|---|---|
-| non-empty               | unset           | **strict** — unknown event types rejected |
+| non-empty               | unset           | **strict**: unknown event types rejected |
 | empty / absent          | unset           | permissive generic fallback (dev convenience) |
-| any                     | `true`          | strict — with no schema this is deny-all |
+| any                     | `true`          | strict: with no schema this is deny-all |
 | any                     | `false`         | permissive generic fallback (legacy mode; server emits a startup warning when the schema is non-empty) |
 
 The error body lists the allowed event types so callers can self-correct:
@@ -161,6 +161,6 @@ helm template aviso . -f examples/values-auth-enabled.yaml
 
 ## Related repositories
 
-- [`ecmwf/aviso-server`](https://github.com/ecmwf/aviso-server) — server binary, configuration reference, ECPDS runbook.
-- [`ecmwf/aviso-config`](https://github.com/ecmwf/aviso-config) — production overlays applied on top of this chart.
-- [`ecmwf/auth-o-tron-chart`](https://github.com/ecmwf/auth-o-tron-chart) — bundled authentication subchart.
+- [`ecmwf/aviso-server`](https://github.com/ecmwf/aviso-server): server binary, configuration reference, ECPDS runbook.
+- [`ecmwf/aviso-config`](https://github.com/ecmwf/aviso-config): production overlays applied on top of this chart.
+- [`ecmwf/auth-o-tron-chart`](https://github.com/ecmwf/auth-o-tron-chart): bundled authentication subchart.
