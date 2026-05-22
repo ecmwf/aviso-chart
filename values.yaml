@@ -6,11 +6,18 @@ fullnameOverride: ""
 replicaCount: 1
 
 # Container image for aviso-server.
+#
+# The published image ships in two flavors:
+#   - "<version>"         core build (notify, watch, replay, auth, metrics)
+#   - "<version>-ecpds"   core build + ECPDS destination authorization plugin
+# Pick the matching flavor only if you plan to enable config.ecpds and
+# reference plugins: ["ecpds"] in a stream's auth block; otherwise stick
+# to the core tag.
 image:
   repository: eccr.ecmwf.int/aviso/aviso_server
   # Use IfNotPresent for stable clusters; switch to Always in rapid dev loops.
   pullPolicy: IfNotPresent
-  tag: "0.4.0"
+  tag: "0.5.0"
 
 # Private registry credentials (disabled by default).
 # Example override:
@@ -28,7 +35,6 @@ imagePullSecrets:
 service:
   type: ClusterIP
   port: 8000
-  targetPort: 8000
   # Optional annotations on the aviso Service resource.
   annotations: {}
 
@@ -41,6 +47,22 @@ tolerations: []
 affinity: {}
 
 # Ingress is opt-in. Configure host/TLS in your override values.
+#
+# streamingTuning emits the ingress-controller annotations required for
+# aviso's long-lived SSE connections. Aviso watch endpoints stay open for
+# up to config.watch_endpoint.connection_max_duration_sec (default 3600),
+# so the default proxy timeouts of most controllers (~60s) will drop
+# connections mid-stream unless these are set.
+#
+# Supported controllers:
+#   - "nginx-org"      F5 NGINX Ingress Controller (nginx.org/* keys)
+#   - "ingress-nginx"  Kubernetes ingress-nginx     (nginx.ingress.kubernetes.io/* keys)
+#   - ""               Disable auto-emit; rely solely on ingress.annotations.
+#
+# Operator-supplied entries in ingress.annotations always win on key
+# collision, so an explicit override of any individual annotation still
+# works without disabling the whole block.
+#
 # Example override:
 # ingress:
 #   enabled: true
@@ -54,6 +76,12 @@ ingress:
   enabled: false
   className: ""
   annotations: {}
+  streamingTuning:
+    enabled: true
+    controller: "nginx-org"
+    proxyBuffering: false
+    proxyReadTimeoutSeconds: 3600
+    proxySendTimeoutSeconds: 3600
   hosts:
     - host: aviso.local
       paths:
@@ -102,7 +130,9 @@ authSecret:
 
 # Extra environment variables injected into the aviso-server container.
 # Use this for secrets that should not live in the ConfigMap.
-# Aviso supports AVISOSERVER_* env overrides on top of the config file.
+# Aviso supports AVISOSERVER_* env overrides on top of the config file
+# (nested keys use "__"). RUST_LOG is also honored for runtime log
+# directive overrides without a redeploy.
 # Example:
 # extraEnv:
 #   - name: AVISOSERVER_AUTH__JWT_SECRET
@@ -115,7 +145,22 @@ authSecret:
 #       secretKeyRef:
 #         name: aviso-nats-secret
 #         key: token
+#   - name: RUST_LOG
+#     value: "info,aviso_server::auth=debug"
 extraEnv: []
+
+# Kubernetes plumbing for the Prometheus metrics server.
+# The server-side metrics endpoint is configured under config.metrics
+# (enabled / host / port). This block only controls the ServiceMonitor
+# resource emitted by the chart for Prometheus Operator discovery.
+# Requires config.metrics.enabled=true and config.metrics.port set.
+metrics:
+  serviceMonitor:
+    enabled: false
+    # interval: 30s
+    # scrapeTimeout: 10s
+    # Extra labels to match your Prometheus selector (for example release: prometheus).
+    # labels: {}
 
 # Raw aviso-server configuration rendered into config.yaml.
 config:
@@ -187,8 +232,10 @@ config:
     timeout_ms: 5000
 
   # Prometheus metrics endpoint (disabled by default).
-  # Runs on a separate internal port. In Kubernetes, set host to "0.0.0.0" so the
-  # service port can reach the metrics server inside the pod.
+  # Runs on a separate internal port. host defaults to "0.0.0.0" so the
+  # Service port can reach the metrics server inside the pod; aviso-server's
+  # own default is "127.0.0.1" (loopback), which would silently break
+  # scraping in Kubernetes.
   # Example override:
   # metrics:
   #   enabled: true
@@ -196,33 +243,90 @@ config:
   #   port: 9090
   metrics:
     enabled: false
-    # host: "127.0.0.1"
+    host: "0.0.0.0"
     # port: 9090
-    # ServiceMonitor for Prometheus Operator discovery.
-    # Requires metrics.enabled=true and a metrics port.
-    serviceMonitor:
-      enabled: false
-      # interval: 30s
-      # scrapeTimeout: 10s
-      # Extra labels to match your Prometheus selector (e.g., release: prometheus).
-      # labels: {}
+
+  # Optional ECPDS destination-authorization plugin (disabled by default).
+  # Requires the "<version>-ecpds" image flavor and a stream that opts in
+  # via auth.plugins: ["ecpds"]. The plugin runs on watch/replay only; it
+  # never blocks notify.
+  #
+  # Credentials are HTTP Basic auth against the ECPDS API; inject them via
+  # extraEnv, do not hard-code them here:
+  #   - name: AVISOSERVER_ECPDS__USERNAME
+  #     valueFrom: { secretKeyRef: { name: aviso-ecpds-secret, key: username } }
+  #   - name: AVISOSERVER_ECPDS__PASSWORD
+  #     valueFrom: { secretKeyRef: { name: aviso-ecpds-secret, key: password } }
+  #
+  # Example override:
+  # ecpds:
+  #   servers:
+  #     - "https://ecpds-primary.example.int"
+  #     - "https://ecpds-secondary.example.int"
+  #   match_key: "destination"
+  #   target_field: "name"
+  #   cache_ttl_seconds: 300
+  #   max_entries: 10000
+  #   request_timeout_seconds: 30
+  #   connect_timeout_seconds: 5
+  #   partial_outage_policy: strict   # strict | any_success
+
+  # Reject requests whose event_type is not in notification_schema.
+  # When unset, aviso-server >= 0.6.0 derives:
+  #   - true  when notification_schema has at least one entry (secure default)
+  #   - false when notification_schema is empty or absent (legacy generic
+  #     fallback for development setups)
+  # Set explicitly to:
+  #   - true  with no schema -> deny-all "drain" mode
+  #   - false with a schema  -> preserve the legacy permissive behavior on
+  #     0.6.0+. A startup warning is emitted in that case.
+  # On older server versions (<= 0.5.x) this field is silently ignored.
+  # notification_schema_strict: true
 
   # Schema-backed event types can be provided via overrides under:
-  # config.notification_schema.<event_type>.identifier.<field>
-  # Each identifier field now uses a flat object:
+  # config.notification_schema.<event_type>
+  #
+  # Top-level keys per stream:
+  #   payload:        { required: bool }
+  #   topic:          { base: str, key_order: [field, ...] }
+  #   identifier:     { <field>: { description?, type, required, <handler-fields> } }
+  #   auth:           { required, read_roles?, write_roles?, plugins? }
+  #   storage_policy: { retention_time, max_messages, max_size, allow_duplicates, compression }
+  #
+  # Each identifier field uses a flat object:
   #   description: Optional human-readable text exposed by /api/v1/schema
   #   type:        Validation handler type (for example EnumHandler)
   #   required:    Whether the field is required
   #   <handler fields>: Handler-specific options (for example values, range, max_length)
+  #
   # Example:
   # notification_schema:
   #   my_event:
+  #     payload:
+  #       required: true
+  #     topic:
+  #       base: "my-event"
+  #       key_order: ["region", "date"]
+  #     auth:
+  #       required: true
+  #       read_roles:  { localrealm: ["*"] }
+  #       write_roles: { localrealm: ["producer"] }
+  #     storage_policy:
+  #       retention_time: "7d"
+  #       max_messages: 1000000
+  #       max_size: "4Gi"
+  #       allow_duplicates: false
+  #       compression: true
   #     identifier:
   #       region:
   #         description: "Geographic region label."
   #         type: EnumHandler
   #         values: ["north", "south"]
   #         required: true
+  #       date:
+  #         type: DateHandler
+  #         canonical_format: "%Y%m%d"
+  #         required: false
 
 # Optional bundled official NATS chart (default off; prefer explicit overrides).
 # You can annotate subchart resources via official chart merge/patch points, for example:

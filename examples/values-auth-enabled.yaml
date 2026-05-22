@@ -16,6 +16,15 @@ extraEnv:
         name: aviso-auth-secret
         key: jwt-secret
 
+# ServiceMonitor lives at the chart level; the server-side metrics endpoint
+# lives under config.metrics. Both are required for Prometheus scraping.
+metrics:
+  serviceMonitor:
+    enabled: true
+    interval: 30s
+    labels:
+      release: prometheus
+
 config:
   auth:
     enabled: true
@@ -29,11 +38,6 @@ config:
     enabled: true
     host: "0.0.0.0"
     port: 9090
-    serviceMonitor:
-      enabled: true
-      interval: 30s
-      labels:
-        release: prometheus
 
   # Example authenticated schema with read/write role separation.
   # notification_schema:

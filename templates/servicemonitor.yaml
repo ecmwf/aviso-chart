@@ -1,11 +1,11 @@
-{{- if and .Values.config.metrics .Values.config.metrics.enabled .Values.config.metrics.port .Values.config.metrics.serviceMonitor .Values.config.metrics.serviceMonitor.enabled }}
+{{- if and .Values.config.metrics .Values.config.metrics.enabled .Values.config.metrics.port .Values.metrics .Values.metrics.serviceMonitor .Values.metrics.serviceMonitor.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ include "aviso-server.fullname" . }}
   labels:
     {{- include "aviso-server.labels" . | nindent 4 }}
-    {{- with .Values.config.metrics.serviceMonitor.labels }}
+    {{- with .Values.metrics.serviceMonitor.labels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
@@ -15,10 +15,10 @@ spec:
   endpoints:
     - port: metrics
       path: /metrics
-      {{- with .Values.config.metrics.serviceMonitor.interval }}
+      {{- with .Values.metrics.serviceMonitor.interval }}
       interval: {{ . }}
       {{- end }}
-      {{- with .Values.config.metrics.serviceMonitor.scrapeTimeout }}
+      {{- with .Values.metrics.serviceMonitor.scrapeTimeout }}
       scrapeTimeout: {{ . }}
       {{- end }}
 {{- end }}
