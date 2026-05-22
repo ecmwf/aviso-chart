@@ -17,7 +17,12 @@ image:
   repository: eccr.ecmwf.int/aviso/aviso_server
   # Use IfNotPresent for stable clusters; switch to Always in rapid dev loops.
   pullPolicy: IfNotPresent
-  tag: "0.5.0"
+  # Empty by default: the deployment template falls back to Chart.yaml's
+  # appVersion so the image tag always tracks the chart release without a
+  # second source of truth to maintain. Override here (or via --set image.tag)
+  # only when you need a non-default tag such as "<version>-ecpds" for the
+  # ECPDS-enabled flavor or "<version>-rc1" for a pre-release.
+  tag: ""
 
 # Private registry credentials (disabled by default).
 # Example override:
