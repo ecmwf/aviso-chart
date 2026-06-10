@@ -167,6 +167,18 @@ metrics:
     # Extra labels to match your Prometheus selector (for example release: prometheus).
     # labels: {}
 
+  # Ship the bundled Grafana dashboard (dashboards/aviso-server.json) as a
+  # ConfigMap labelled grafana_dashboard: "1" for sidecar-based discovery
+  # (kube-prometheus-stack convention). The dashboard uses a DS_PROMETHEUS
+  # datasource variable, so it works against any Prometheus datasource.
+  # If your Grafana sidecar filters on a different label or sorts dashboards
+  # into folders via an annotation, set labels/annotations accordingly.
+  grafanaDashboard:
+    enabled: false
+    # labels: {}
+    # annotations:
+    #   grafana_folder: "aviso"
+
 # Raw aviso-server configuration rendered into config.yaml.
 config:
   application:

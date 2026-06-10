@@ -87,6 +87,21 @@ metrics:
 
 `config.metrics.host` defaults to `"0.0.0.0"` (server-side default is `127.0.0.1`, which would silently break in-cluster scraping).
 
+### Grafana dashboard
+
+The chart bundles a ready-made dashboard ([`dashboards/aviso-server.json`](dashboards/aviso-server.json)) covering API RED metrics (request rate, error ratio, latency), notifications and SSE delivery, and auth/ECPDS panels, with deploy annotations driven by `aviso_build_info`. Enable it to ship the dashboard as a ConfigMap labelled `grafana_dashboard: "1"` for Grafana sidecar discovery:
+
+```yaml
+metrics:
+  grafanaDashboard:
+    enabled: true
+    # labels: {}        # extra labels if your sidecar filters on more than the default
+    # annotations:
+    #   grafana_folder: "aviso"
+```
+
+The dashboard binds its panels to a `DS_PROMETHEUS` datasource variable, so it works with any Prometheus datasource. If your cluster's Grafana does not run the dashboard sidecar, import the JSON manually; the file in this repo stays the version-controlled source of truth.
+
 ### ECPDS destination-authorization plugin
 
 Opt-in per stream via `auth.plugins: ["ecpds"]` in the schema. Plugin-wide settings (servers, cache, timeouts) live under `config.ecpds`. Credentials are HTTP Basic auth against the ECPDS API. Never put them in the values file; inject them via `extraEnv` from a Kubernetes Secret:
