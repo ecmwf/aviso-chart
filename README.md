@@ -89,18 +89,7 @@ metrics:
 
 ### Grafana dashboard
 
-The chart bundles a ready-made dashboard ([`dashboards/aviso-server.json`](dashboards/aviso-server.json)) covering API RED metrics (request rate, error ratio, latency), notifications and SSE delivery, and auth/ECPDS panels, with deploy annotations driven by `aviso_build_info`. Enable it to ship the dashboard as a ConfigMap labelled `grafana_dashboard: "1"` for Grafana sidecar discovery:
-
-```yaml
-metrics:
-  grafanaDashboard:
-    enabled: true
-    # labels: {}        # extra labels if your sidecar filters on more than the default
-    # annotations:
-    #   grafana_folder: "aviso"
-```
-
-The dashboard binds its panels to a `DS_PROMETHEUS` datasource variable, so it works with any Prometheus datasource. If your cluster's Grafana does not run the dashboard sidecar, import the JSON manually; the file in this repo stays the version-controlled source of truth.
+This repo version-controls a ready-made dashboard at [`dashboards/aviso-server.json`](dashboards/aviso-server.json), covering API RED metrics (request rate, error ratio, latency), notifications and SSE delivery, and auth/ECPDS panels, with deploy annotations driven by `aviso_build_info`. It is not deployed by the chart: import the JSON into Grafana manually (Dashboards > Import). Panels bind to a `DS_PROMETHEUS` datasource variable, so it works with any Prometheus datasource. Update the JSON here in lockstep with metric changes in new `appVersion`s.
 
 ### ECPDS destination-authorization plugin
 
