@@ -81,17 +81,29 @@
           "expr": "sum(nats_varz_jetstream_stats_storage{server_id=~\"$server\"})/sum(nats_varz_jetstream_config_max_storage{server_id=~\"$server\"})",
           "interval": "",
           "legendFormat": "",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
         },
         {
           "expr": "",
           "interval": "",
           "legendFormat": "",
-          "refId": "B"
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
         }
       ],
       "title": "Storage Used",
-      "type": "gauge"
+      "type": "gauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      }
     },
     {
       "fieldConfig": {
@@ -138,11 +150,19 @@
           "expr": "sum(nats_varz_jetstream_stats_storage{server_id=~\"$server\"})",
           "interval": "",
           "legendFormat": "",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
         }
       ],
       "title": "Total Storage Used",
-      "type": "stat"
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      }
     },
     {
       "fieldConfig": {
@@ -197,17 +217,29 @@
           "expr": "sum(nats_varz_jetstream_stats_memory{server_id=~\"$server\"})/sum(nats_varz_jetstream_config_max_memory{server_id=~\"$server\"})",
           "interval": "",
           "legendFormat": "",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
         },
         {
           "expr": "",
           "interval": "",
           "legendFormat": "",
-          "refId": "B"
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
         }
       ],
       "title": "Memory Used",
-      "type": "gauge"
+      "type": "gauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      }
     },
     {
       "fieldConfig": {
@@ -254,11 +286,19 @@
           "expr": "sum(nats_varz_jetstream_stats_memory{server_id=~\"$server\"})",
           "interval": "",
           "legendFormat": "",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
         }
       ],
       "title": "Memory Used",
-      "type": "stat"
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      }
     },
     {
       "fieldConfig": {
@@ -309,11 +349,19 @@
           "expr": "sum(nats_varz_connections{server_id=~\"$server\"})",
           "interval": "",
           "legendFormat": "",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
         }
       ],
       "title": "Connections",
-      "type": "stat"
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      }
     },
     {
       "fieldConfig": {
@@ -360,11 +408,19 @@
           "expr": "sum(nats_varz_jetstream_config_max_storage{server_id=~\"$server\"})",
           "interval": "",
           "legendFormat": "",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
         }
       ],
       "title": "Max Storage",
-      "type": "stat"
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      }
     },
     {
       "fieldConfig": {
@@ -411,11 +467,19 @@
           "expr": "sum(nats_varz_jetstream_config_max_memory{server_id=~\"$server\"})",
           "interval": "",
           "legendFormat": "",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
         }
       ],
       "title": "Total Memory",
-      "type": "stat"
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      }
     },
     {
       "fieldConfig": {
@@ -465,11 +529,19 @@
           "expr": "sum(nats_server_total_consumers{server_id=~\"$server\"})",
           "interval": "",
           "legendFormat": "",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
         }
       ],
       "title": "Total Consumers",
-      "type": "stat"
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      }
     },
     {
       "collapsed": false,
@@ -559,11 +631,19 @@
           "expr": "sum(nats_stream_total_bytes) by (stream_name)",
           "interval": "",
           "legendFormat": "{{stream_name}}",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
         }
       ],
       "title": "Stream data size",
-      "type": "timeseries"
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      }
     },
     {
       "fieldConfig": {
@@ -640,11 +720,19 @@
           "expr": "sum(nats_stream_total_messages) by (stream_name)",
           "interval": "",
           "legendFormat": "{{stream_name}}",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
         }
       ],
       "title": "Stream message count",
-      "type": "timeseries"
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      }
     },
     {
       "fieldConfig": {
@@ -722,11 +810,19 @@
           "hide": false,
           "interval": "",
           "legendFormat": "{{stream_name}}",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
         }
       ],
       "title": "Message Rate (per second)",
-      "type": "timeseries"
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      }
     },
     {
       "collapsed": false,
@@ -820,18 +916,30 @@
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{consumer_name}} +",
-          "refId": "B"
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
         },
         {
           "expr": "- sum(rate(nats_consumer_delivered_consumer_seq{server_id=~\"$server\",stream_name=~\"$stream\",consumer_name=~\"$consumer\",consumer_name=~\"$consumer\"}[$__rate_interval])) by (consumer_name)",
           "hide": false,
           "interval": "",
           "legendFormat": "{{consumer_name}} -",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
         }
       ],
       "title": "Messages per second (++/--)",
-      "type": "timeseries"
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      }
     },
     {
       "fieldConfig": {
@@ -909,11 +1017,19 @@
           "hide": false,
           "interval": "",
           "legendFormat": "{{consumer_name}}",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
         }
       ],
       "title": "Total delivered messages",
-      "type": "timeseries"
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      }
     },
     {
       "fieldConfig": {
@@ -992,11 +1108,19 @@
           "hide": false,
           "interval": "",
           "legendFormat": "{{consumer_name}}",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
         }
       ],
       "title": "Pending messages",
-      "type": "timeseries"
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      }
     },
     {
       "fieldConfig": {
@@ -1075,11 +1199,19 @@
           "hide": false,
           "interval": "",
           "legendFormat": "{{consumer_name}}",
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
         }
       ],
       "title": "Message Acks Pending",
-      "type": "timeseries"
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      }
     }
   ],
   "refresh": "10s",
