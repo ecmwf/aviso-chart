@@ -2,20 +2,24 @@
 exclusions:
   target-instance-rule:
     reason: >
-      Service-level dashboard for an HPA-managed deployment (1-10 pods with
-      churning pod names). Queries deliberately aggregate across instances
-      and are scoped by the namespace/job template variables instead; a
-      per-instance selector would break aggregation during scale events
-      and rollouts.
+      Service-level dashboard for an HPA-managed deployment (pods with churning
+      names). Queries deliberately aggregate across instances and are scoped by
+      the namespace/job template variables; a per-instance selector would break
+      aggregation during scale events and rollouts.
   template-instance-rule:
     reason: >
-      Same rationale as target-instance-rule: pods are ephemeral under HPA,
-      so an instance variable would pin queries to dead pods. Per-pod
-      breakdowns that matter (runtime, ECPDS cache size) group by the pod
-      label instead.
+      Same rationale as target-instance-rule: pods are ephemeral under HPA, so
+      an instance variable would pin queries to dead pods. Per-pod breakdowns
+      that matter group by the pod label instead.
   target-rate-interval-rule:
     reason: >
       aviso_sse_connection_duration_seconds is only observed when SSE
-      connections close, which is sparse (connections live up to hours).
-      A fixed 30m window keeps the histogram quantiles stable; the default
-      $__rate_interval (~40s at common ranges) would mostly return no data.
+      connections close, which is sparse. A fixed 30m window keeps the
+      histogram quantiles stable; $__rate_interval would mostly return no data.
+  target-job-rule:
+    reason: >
+      The collapsed "Cluster" row queries kube-state-metrics and cAdvisor
+      series (kube_horizontalpodautoscaler_*, container_*, kube_pod_*), which
+      are labelled by the platform's own job, not the aviso app job. They are
+      scoped by namespace plus a pod/hpa name regex instead. All app-metric
+      panels still carry the job=~"$job" matcher.
