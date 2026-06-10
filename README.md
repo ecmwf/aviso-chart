@@ -89,7 +89,7 @@ metrics:
 
 ### Grafana dashboard
 
-This repo version-controls a ready-made dashboard at [`dashboards/aviso-server.json`](dashboards/aviso-server.json), covering API RED metrics (request rate, error ratio, latency), notifications and SSE delivery, and auth/ECPDS panels, with deploy annotations driven by `aviso_build_info`. It is not deployed by the chart: import the JSON into Grafana manually (Dashboards > Import). Panels bind to a `DS_PROMETHEUS` datasource variable, so it works with any Prometheus datasource. Update the JSON here in lockstep with metric changes in new `appVersion`s.
+This repo version-controls a ready-made dashboard at [`dashboards/aviso-server.json`](dashboards/aviso-server.json): an on-call overview row (scrape health, pods by version, traffic, 5xx ratio, p99, active SSE), API RED panels, notifications and SSE delivery, auth/ECPDS, and per-pod runtime panels, with deploy annotations driven by `aviso_build_info`. It is not deployed by the chart: import the JSON into Grafana manually (Dashboards > Import). Panels bind to `datasource`/`namespace`/`job` template variables, so one import serves multiple aviso environments scraped by the same Prometheus. The JSON passes [`grafana/dashboard-linter`](https://github.com/grafana/dashboard-linter) with the reasoned exclusions in [`dashboards/.lint`](dashboards/.lint); update it in lockstep with metric changes in new `appVersion`s.
 
 ### ECPDS destination-authorization plugin
 

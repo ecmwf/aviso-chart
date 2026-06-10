@@ -1,0 +1,21 @@
+# Settings for github.com/grafana/dashboard-linter.
+exclusions:
+  target-instance-rule:
+    reason: >
+      Service-level dashboard for an HPA-managed deployment (1-10 pods with
+      churning pod names). Queries deliberately aggregate across instances
+      and are scoped by the namespace/job template variables instead; a
+      per-instance selector would break aggregation during scale events
+      and rollouts.
+  template-instance-rule:
+    reason: >
+      Same rationale as target-instance-rule: pods are ephemeral under HPA,
+      so an instance variable would pin queries to dead pods. Per-pod
+      breakdowns that matter (runtime, ECPDS cache size) group by the pod
+      label instead.
+  target-rate-interval-rule:
+    reason: >
+      aviso_sse_connection_duration_seconds is only observed when SSE
+      connections close, which is sparse (connections live up to hours).
+      A fixed 30m window keeps the histogram quantiles stable; the default
+      $__rate_interval (~40s at common ranges) would mostly return no data.
