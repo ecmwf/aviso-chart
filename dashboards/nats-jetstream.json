@@ -78,7 +78,7 @@
       "pluginVersion": "8.3.4",
       "targets": [
         {
-          "expr": "sum(nats_varz_jetstream_stats_storage{server_id=~\"$server\"})/sum(nats_varz_jetstream_config_max_storage{server_id=~\"$server\"})",
+          "expr": "sum(nats_varz_jetstream_stats_storage{namespace=~\"$namespace\",server_id=~\"$server\"})/sum(nats_varz_jetstream_config_max_storage{namespace=~\"$namespace\",server_id=~\"$server\"})",
           "interval": "",
           "legendFormat": "",
           "refId": "A",
@@ -147,7 +147,7 @@
       "pluginVersion": "8.3.4",
       "targets": [
         {
-          "expr": "sum(nats_varz_jetstream_stats_storage{server_id=~\"$server\"})",
+          "expr": "sum(nats_varz_jetstream_stats_storage{namespace=~\"$namespace\",server_id=~\"$server\"})",
           "interval": "",
           "legendFormat": "",
           "refId": "A",
@@ -214,7 +214,7 @@
       "pluginVersion": "8.3.4",
       "targets": [
         {
-          "expr": "sum(nats_varz_jetstream_stats_memory{server_id=~\"$server\"})/sum(nats_varz_jetstream_config_max_memory{server_id=~\"$server\"})",
+          "expr": "sum(nats_varz_jetstream_stats_memory{namespace=~\"$namespace\",server_id=~\"$server\"})/sum(nats_varz_jetstream_config_max_memory{namespace=~\"$namespace\",server_id=~\"$server\"})",
           "interval": "",
           "legendFormat": "",
           "refId": "A",
@@ -283,7 +283,7 @@
       "pluginVersion": "8.3.4",
       "targets": [
         {
-          "expr": "sum(nats_varz_jetstream_stats_memory{server_id=~\"$server\"})",
+          "expr": "sum(nats_varz_jetstream_stats_memory{namespace=~\"$namespace\",server_id=~\"$server\"})",
           "interval": "",
           "legendFormat": "",
           "refId": "A",
@@ -346,7 +346,7 @@
       "pluginVersion": "8.3.4",
       "targets": [
         {
-          "expr": "sum(nats_varz_connections{server_id=~\"$server\"})",
+          "expr": "sum(nats_varz_connections{namespace=~\"$namespace\",server_id=~\"$server\"})",
           "interval": "",
           "legendFormat": "",
           "refId": "A",
@@ -405,7 +405,7 @@
       "pluginVersion": "8.3.4",
       "targets": [
         {
-          "expr": "sum(nats_varz_jetstream_config_max_storage{server_id=~\"$server\"})",
+          "expr": "sum(nats_varz_jetstream_config_max_storage{namespace=~\"$namespace\",server_id=~\"$server\"})",
           "interval": "",
           "legendFormat": "",
           "refId": "A",
@@ -464,7 +464,7 @@
       "pluginVersion": "8.3.4",
       "targets": [
         {
-          "expr": "sum(nats_varz_jetstream_config_max_memory{server_id=~\"$server\"})",
+          "expr": "sum(nats_varz_jetstream_config_max_memory{namespace=~\"$namespace\",server_id=~\"$server\"})",
           "interval": "",
           "legendFormat": "",
           "refId": "A",
@@ -526,7 +526,7 @@
       "pluginVersion": "8.3.4",
       "targets": [
         {
-          "expr": "sum(nats_server_total_consumers{server_id=~\"$server\"})",
+          "expr": "sum(nats_server_total_consumers{namespace=~\"$namespace\",server_id=~\"$server\"})",
           "interval": "",
           "legendFormat": "",
           "refId": "A",
@@ -628,7 +628,7 @@
       "pluginVersion": "8.3.4",
       "targets": [
         {
-          "expr": "sum(nats_stream_total_bytes) by (stream_name)",
+          "expr": "sum(nats_stream_total_bytes{namespace=~\"$namespace\"}) by (stream_name)",
           "interval": "",
           "legendFormat": "{{stream_name}}",
           "refId": "A",
@@ -717,7 +717,7 @@
       "pluginVersion": "8.3.4",
       "targets": [
         {
-          "expr": "sum(nats_stream_total_messages) by (stream_name)",
+          "expr": "sum(nats_stream_total_messages{namespace=~\"$namespace\"}) by (stream_name)",
           "interval": "",
           "legendFormat": "{{stream_name}}",
           "refId": "A",
@@ -806,7 +806,7 @@
       "pluginVersion": "8.3.4",
       "targets": [
         {
-          "expr": "sum(rate(nats_stream_last_seq{server_id=~\"$server\",stream_name=~\"$stream\"}[$__rate_interval])) by (stream_name)",
+          "expr": "sum(rate(nats_stream_last_seq{namespace=~\"$namespace\",server_id=~\"$server\",stream_name=~\"$stream\"}[$__rate_interval])) by (stream_name)",
           "hide": false,
           "interval": "",
           "legendFormat": "{{stream_name}}",
@@ -910,7 +910,7 @@
       "pluginVersion": "8.3.4",
       "targets": [
         {
-          "expr": "sum(rate(nats_consumer_num_pending{server_id=~\"$server\",stream_name=~\"$stream\",consumer_name=~\"$consumer\"}[$__rate_interval])+rate(nats_consumer_delivered_consumer_seq{server_id=~\"$server\",stream_name=~\"$stream\",consumer_name=~\"$consumer\"}[$__rate_interval])) by (consumer_name)",
+          "expr": "sum(rate(nats_consumer_num_pending{namespace=~\"$namespace\",server_id=~\"$server\",stream_name=~\"$stream\",consumer_name=~\"$consumer\"}[$__rate_interval])+rate(nats_consumer_delivered_consumer_seq{namespace=~\"$namespace\",server_id=~\"$server\",stream_name=~\"$stream\",consumer_name=~\"$consumer\"}[$__rate_interval])) by (consumer_name)",
           "hide": false,
           "instant": false,
           "interval": "",
@@ -923,7 +923,7 @@
           }
         },
         {
-          "expr": "- sum(rate(nats_consumer_delivered_consumer_seq{server_id=~\"$server\",stream_name=~\"$stream\",consumer_name=~\"$consumer\",consumer_name=~\"$consumer\"}[$__rate_interval])) by (consumer_name)",
+          "expr": "- sum(rate(nats_consumer_delivered_consumer_seq{namespace=~\"$namespace\",server_id=~\"$server\",stream_name=~\"$stream\",consumer_name=~\"$consumer\",consumer_name=~\"$consumer\"}[$__rate_interval])) by (consumer_name)",
           "hide": false,
           "interval": "",
           "legendFormat": "{{consumer_name}} -",
@@ -1013,7 +1013,7 @@
       "pluginVersion": "8.3.4",
       "targets": [
         {
-          "expr": "sum(nats_consumer_delivered_consumer_seq{server_id=~\"$server\",stream_name=~\"$stream\",consumer_name=~\"$consumer\"}) by (consumer_name)",
+          "expr": "sum(nats_consumer_delivered_consumer_seq{namespace=~\"$namespace\",server_id=~\"$server\",stream_name=~\"$stream\",consumer_name=~\"$consumer\"}) by (consumer_name)",
           "hide": false,
           "interval": "",
           "legendFormat": "{{consumer_name}}",
@@ -1104,7 +1104,7 @@
       "pluginVersion": "8.3.4",
       "targets": [
         {
-          "expr": "sum(nats_consumer_num_pending{server_id=~\"$server\",stream_name=~\"$stream\",consumer_name=~\"$consumer\"}) by (consumer_name)",
+          "expr": "sum(nats_consumer_num_pending{namespace=~\"$namespace\",server_id=~\"$server\",stream_name=~\"$stream\",consumer_name=~\"$consumer\"}) by (consumer_name)",
           "hide": false,
           "interval": "",
           "legendFormat": "{{consumer_name}}",
@@ -1195,7 +1195,7 @@
       "pluginVersion": "8.3.4",
       "targets": [
         {
-          "expr": "sum(nats_consumer_num_ack_pending{server_id=~\"$server\",stream_name=~\"$stream\",consumer_name=~\"$consumer\"}) by (consumer_name)",
+          "expr": "sum(nats_consumer_num_ack_pending{namespace=~\"$namespace\",server_id=~\"$server\",stream_name=~\"$stream\",consumer_name=~\"$consumer\"}) by (consumer_name)",
           "hide": false,
           "interval": "",
           "legendFormat": "{{consumer_name}}",
@@ -1234,6 +1234,25 @@
         "current": {}
       },
       {
+        "name": "namespace",
+        "label": "Namespace",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "query": {
+          "query": "label_values(nats_varz_connections, namespace)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "sort": 1,
+        "current": {},
+        "hide": 0,
+        "includeAll": false,
+        "multi": false
+      },
+      {
         "current": {},
         "definition": "label_values(nats_server_total_streams, server_id)",
         "hide": 0,
@@ -1243,7 +1262,7 @@
         "name": "server",
         "options": [],
         "query": {
-          "query": "label_values(nats_server_total_streams, server_id)",
+          "query": "label_values(nats_varz_connections{namespace=~\"$namespace\"}, server_id)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -1266,7 +1285,7 @@
         "name": "stream",
         "options": [],
         "query": {
-          "query": "label_values(nats_stream_last_seq, stream_name)",
+          "query": "label_values(nats_stream_last_seq{namespace=~\"$namespace\"}, stream_name)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -1289,7 +1308,7 @@
         "name": "consumer",
         "options": [],
         "query": {
-          "query": "label_values(nats_consumer_num_pending, consumer_name)",
+          "query": "label_values(nats_consumer_num_pending{namespace=~\"$namespace\"}, consumer_name)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
