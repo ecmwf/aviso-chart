@@ -57,10 +57,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 6,
-        "w": 4,
         "x": 0,
-        "y": 0
+        "y": 0,
+        "w": 8,
+        "h": 6
       },
       "id": 28,
       "options": {
@@ -124,10 +124,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 3,
-        "w": 5,
-        "x": 4,
-        "y": 0
+        "x": 8,
+        "y": 0,
+        "w": 8,
+        "h": 3
       },
       "id": 15,
       "options": {
@@ -167,142 +167,6 @@
     {
       "fieldConfig": {
         "defaults": {
-          "decimals": 3,
-          "mappings": [],
-          "max": 1,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "#EAB839",
-                "value": 0.75
-              },
-              {
-                "color": "red",
-                "value": 0.9
-              }
-            ]
-          },
-          "unit": "percentunit"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 4,
-        "x": 9,
-        "y": 0
-      },
-      "id": 31,
-      "options": {
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
-      },
-      "pluginVersion": "8.3.4",
-      "targets": [
-        {
-          "expr": "sum(nats_varz_jetstream_stats_memory{namespace=~\"$namespace\",server_id=~\"$server\"})/sum(nats_varz_jetstream_config_max_memory{namespace=~\"$namespace\",server_id=~\"$server\"})",
-          "interval": "",
-          "legendFormat": "",
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          }
-        },
-        {
-          "expr": "",
-          "interval": "",
-          "legendFormat": "",
-          "refId": "B",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          }
-        }
-      ],
-      "title": "Memory Used",
-      "type": "gauge",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
-      }
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "percentage",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "bytes"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 5,
-        "x": 13,
-        "y": 0
-      },
-      "id": 32,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "8.3.4",
-      "targets": [
-        {
-          "expr": "sum(nats_varz_jetstream_stats_memory{namespace=~\"$namespace\",server_id=~\"$server\"})",
-          "interval": "",
-          "legendFormat": "",
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          }
-        }
-      ],
-      "title": "Memory Used",
-      "type": "stat",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
-      }
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
           "mappings": [],
           "min": 0,
           "noValue": "0",
@@ -323,10 +187,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 3,
-        "w": 6,
-        "x": 18,
-        "y": 0
+        "x": 16,
+        "y": 0,
+        "w": 8,
+        "h": 3
       },
       "id": 14,
       "options": {
@@ -382,10 +246,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 3,
-        "w": 5,
-        "x": 4,
-        "y": 3
+        "x": 8,
+        "y": 3,
+        "w": 8,
+        "h": 3
       },
       "id": 30,
       "options": {
@@ -428,65 +292,6 @@
           "mappings": [],
           "min": 0,
           "thresholds": {
-            "mode": "percentage",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "bytes"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 5,
-        "x": 13,
-        "y": 3
-      },
-      "id": 33,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "8.3.4",
-      "targets": [
-        {
-          "expr": "sum(nats_varz_jetstream_config_max_memory{namespace=~\"$namespace\",server_id=~\"$server\"})",
-          "interval": "",
-          "legendFormat": "",
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          }
-        }
-      ],
-      "title": "Total Memory",
-      "type": "stat",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${datasource}"
-      }
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
             "mode": "absolute",
             "steps": [
               {
@@ -503,10 +308,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 3,
-        "w": 6,
-        "x": 18,
-        "y": 3
+        "x": 16,
+        "y": 3,
+        "w": 8,
+        "h": 3
       },
       "id": 29,
       "options": {
