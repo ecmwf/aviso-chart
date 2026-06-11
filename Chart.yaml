@@ -2,7 +2,7 @@ apiVersion: v2
 name: aviso-chart
 description: A Helm chart for Aviso Server - streaming notification service
 type: application
-version: 0.6.4
+version: 0.6.5
 appVersion: "0.7.1"
 keywords:
   - notifications
@@ -26,7 +26,7 @@ dependencies:
     repository: https://nats-io.github.io/k8s/helm/charts/
     condition: nats.enabled
   - name: auth-o-tron-chart
-    version: 0.3.3
+    version: 0.3.4
     repository: oci://eccr.ecmwf.int/auth-o-tron
     condition: auth-o-tron.enabled
     alias: auth-o-tron
