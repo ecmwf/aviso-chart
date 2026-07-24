@@ -216,6 +216,15 @@ config:
     level: info
     # Compatibility field in aviso-server. Runtime output is structured JSON.
     format: json
+    # Optional push-based OTLP log export (aviso-server >= 0.8). Logs are
+    # always written to stdout; when enabled they are additionally pushed
+    # to the collector endpoint. Collectors conventionally listen on 4317
+    # for grpc and 4318 for http. A missing scheme defaults to http://.
+    # Example override:
+    # otlp:
+    #   enabled: true
+    #   endpoint: "http://otel-collector.observability.svc:4317"
+    #   protocol: grpc   # grpc | http
 
   # Authentication and authorization (disabled by default).
   # When enabled, admin endpoints always require auth + admin_roles.
