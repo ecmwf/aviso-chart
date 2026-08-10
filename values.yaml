@@ -120,7 +120,7 @@ livenessProbe:
   initialDelaySeconds: 30
   periodSeconds: 10
 
-# Readiness uses /ready (aviso-server >= 0.9): 200 while the notification
+# Readiness uses /ready (aviso-server >= 0.9.0): 200 while the notification
 # backend connection is healthy, 503 while it is down or reconnecting, so
 # traffic routes away during a backend outage and resumes on reconnect.
 readinessProbe:
