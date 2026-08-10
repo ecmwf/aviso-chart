@@ -111,6 +111,8 @@ resources:
     cpu: 500m
     memory: 512Mi
 
+# Liveness stays on /health (pure process liveness): a backend outage
+# must not kill the pod, since the NATS client reconnects on its own.
 livenessProbe:
   httpGet:
     path: /health
@@ -118,9 +120,12 @@ livenessProbe:
   initialDelaySeconds: 30
   periodSeconds: 10
 
+# Readiness uses /ready (aviso-server >= 0.9.0): 200 while the notification
+# backend connection is healthy, 503 while it is down or reconnecting, so
+# traffic routes away during a backend outage and resumes on reconnect.
 readinessProbe:
   httpGet:
-    path: /health
+    path: /ready
     port: http
   initialDelaySeconds: 5
   periodSeconds: 5
