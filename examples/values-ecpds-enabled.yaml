@@ -1,16 +1,12 @@
 # ECPDS destination-authorization profile.
 #
-# Requires the "<version>-ecpds" image flavor. The core image does not
-# contain the plugin and will refuse to start if any stream references
-# plugins: ["ecpds"].
+# The published image ships with the plugin compiled in; enabling it is a
+# configuration decision, no special image tag is needed.
 #
 # Prerequisites:
 #   kubectl create secret generic aviso-ecpds-secret \
 #     --from-literal=username=ecpds-service-account \
 #     --from-literal=password=service-password
-
-image:
-  tag: "0.5.0-ecpds"
 
 extraEnv:
   - name: AVISOSERVER_ECPDS__USERNAME
