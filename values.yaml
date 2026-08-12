@@ -7,12 +7,10 @@ replicaCount: 1
 
 # Container image for aviso-server.
 #
-# The published image ships in two flavors:
-#   - "<version>"         core build (notify, watch, replay, auth, metrics)
-#   - "<version>-ecpds"   core build + ECPDS destination authorization plugin
-# Pick the matching flavor only if you plan to enable config.ecpds and
-# reference plugins: ["ecpds"] in a stream's auth block; otherwise stick
-# to the core tag.
+# The published "<version>" image is built with the ECPDS destination
+# authorization plugin compiled in; enabling it is purely a configuration
+# decision (config.ecpds plus plugins: ["ecpds"] in a stream's auth block).
+# There is no separate "-ecpds" image flavor.
 image:
   repository: eccr.ecmwf.int/aviso/aviso_server
   # Use IfNotPresent for stable clusters; switch to Always in rapid dev loops.
@@ -20,8 +18,8 @@ image:
   # Empty by default: the deployment template falls back to Chart.yaml's
   # appVersion so the image tag always tracks the chart release without a
   # second source of truth to maintain. Override here (or via --set image.tag)
-  # only when you need a non-default tag such as "<version>-ecpds" for the
-  # ECPDS-enabled flavor or "<version>-rc1" for a pre-release.
+  # only when you need a non-default tag such as "<version>-rc1" for a
+  # pre-release or "<version>-<sha>" for an exact-build pin.
   tag: ""
 
 # Private registry credentials (disabled by default).
@@ -266,7 +264,7 @@ config:
     # port: 9090
 
   # Optional ECPDS destination-authorization plugin (disabled by default).
-  # Requires the "<version>-ecpds" image flavor and a stream that opts in
+  # The published image ships with the plugin compiled in; a stream opts in
   # via auth.plugins: ["ecpds"]. The plugin runs on watch/replay only; it
   # never blocks notify.
   #
