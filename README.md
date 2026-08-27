@@ -6,7 +6,7 @@ Helm chart for [`aviso-server`](https://github.com/ecmwf/aviso-server), ECMWF's 
 
 ```bash
 helm install aviso oci://eccr.ecmwf.int/aviso/aviso-chart \
-  --version 0.4.0 \
+  --version 0.7.4 \
   --namespace aviso \
   --create-namespace
 ```
