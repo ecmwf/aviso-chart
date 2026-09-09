@@ -143,16 +143,11 @@ The error body lists the allowed event types so callers can self-correct:
 
 The field is silently ignored by older server versions (`<= 0.5.x`); it is safe to set it in shared overlays.
 
-## Image flavors
+## ECPDS in the server image
 
-The published image normally ships in two flavors:
-
-| Tag | Build |
-|---|---|
-| `<version>` | core (`notify`, `watch`, `replay`, `auth`, `metrics`) |
-| `<version>-ecpds` | core + ECPDS plugin (`--features ecpds`) |
-
-If your operational image is always built with `--features ecpds`, use `<version>` regardless of whether `config.ecpds` is set; otherwise pick `<version>-ecpds` when enabling the plugin.
+The published `<version>` image includes the ECPDS authorization plugin.
+Enable it through `config.ecpds` and `auth.plugins: ["ecpds"]` in each
+stream's schema. No image-tag change is needed.
 
 ## Local rendering
 
