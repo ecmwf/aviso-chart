@@ -14,7 +14,6 @@ config:
       replicas: 1
       retention_policy: limits
       discard_policy: old
-      enable_auto_reconnect: true
       max_reconnect_attempts: 10
       reconnect_delay_ms: 1000
       publish_retry_attempts: 3
