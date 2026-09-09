@@ -183,7 +183,9 @@ config:
   watch_endpoint:
     sse_heartbeat_interval_sec: 30
     connection_max_duration_sec: 3600
+    # Positive global internal fetch batch size, not the delivered replay cap.
     replay_batch_size: 100
+    # Positive delivered replay cap after filters/rendering; schemas may override.
     max_historical_notifications: 10000
     replay_batch_delay_ms: 100
     concurrent_notification_processing: 15
@@ -308,6 +310,7 @@ config:
   #   identifier:     { <field>: { description?, type, required, <handler-fields> } }
   #   auth:           { required, read_roles?, write_roles?, plugins? }
   #   storage_policy: { retention_time, max_messages, max_size, allow_duplicates, compression }
+  #   max_historical_notifications: positive replay cap; omitted inherits watch_endpoint default
   #
   # Each identifier field uses a flat object:
   #   description: Optional human-readable text exposed by /api/v1/schema
@@ -318,6 +321,8 @@ config:
   # Example:
   # notification_schema:
   #   my_event:
+  #     # Optional replay cap, outside storage_policy (which controls retention).
+  #     max_historical_notifications: 5000
   #     payload:
   #       required: true
   #     topic:

@@ -44,6 +44,12 @@ ingress:
 
 Entries in `ingress.annotations` always win on key collision.
 
+### Historical replay limits
+
+`config.watch_endpoint.max_historical_notifications` defaults to `10000` and caps historical notifications delivered after filtering and rendering. A schema can set a positive `config.notification_schema.<event>.max_historical_notifications` to override it; omission inherits the global default. This key belongs outside `storage_policy`, which controls retention, not replay delivery. `config.watch_endpoint.replay_batch_size` defaults to `100` and controls global internal fetch batches, not the delivered cap. Both settings must be positive integers; `0` is not an unlimited mode.
+
+If one more matching notification exists beyond the cap, the server emits `notification_replay_limit_reached` with `max_allowed`, then closes without `replay_completed` or switching to live delivery. Exhausting history at exactly the cap completes normally. See the commented schema override in [`values.yaml`](values.yaml).
+
 ### Auth (bundled auth-o-tron)
 
 ```yaml
