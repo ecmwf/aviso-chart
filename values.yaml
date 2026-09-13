@@ -178,6 +178,13 @@ config:
     # Used in generated CloudEvents source/schema URLs.
     base_url: "http://aviso-server"
     static_files_path: "/app/static"
+    # Optional homepage link overrides (aviso-server >= 0.11.1).
+    # Omitted fields use these server defaults; no override is required.
+    # homepage:
+    #   client_documentation_url: "https://sites.ecmwf.int/docs/aviso-client/main/"
+    #   client_repository_url: "https://github.com/ecmwf/aviso-client"
+    #   server_documentation_url: "https://sites.ecmwf.int/docs/aviso-server/main/"
+    #   server_repository_url: "https://github.com/ecmwf/aviso-server"
 
   # Keep these aligned with aviso-server runtime defaults.
   watch_endpoint:
