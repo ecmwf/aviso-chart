@@ -6,7 +6,7 @@ Helm chart for [`aviso-server`](https://github.com/ecmwf/aviso-server), ECMWF's 
 
 ```bash
 helm install aviso oci://eccr.ecmwf.int/aviso/aviso-chart \
-  --version 0.7.4 \
+  --version 0.7.6 \
   --namespace aviso \
   --create-namespace
 ```
@@ -43,6 +43,19 @@ ingress:
 ```
 
 Entries in `ingress.annotations` always win on key collision.
+
+### Homepage links
+
+Chart `0.7.6` uses `aviso-server` `0.11.1`. Homepage links default to the client and server documentation and repositories listed in the commented `config.application.homepage` block in [`values.yaml`](values.yaml). Omit this block to inherit the server defaults, or override only the links you need:
+
+```yaml
+config:
+  application:
+    homepage:
+      client_documentation_url: "https://docs.example.org/aviso-client/"
+```
+
+Unspecified fields retain their server defaults. Links must be absolute HTTP(S) URLs with a host and no embedded credentials.
 
 ### Historical replay limits
 
