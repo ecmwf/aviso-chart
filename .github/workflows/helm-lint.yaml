@@ -18,5 +18,15 @@ jobs:
         with:
           version: "4.0.0"
 
+      - name: Build locked chart dependencies
+        run: |
+          helm repo add nats https://nats-io.github.io/k8s/helm/charts/
+          helm dependency build .
+
       - name: Run Helm Lint on Chart
         run: helm lint .
+
+      - name: Run ingress render tests
+        run: |
+          python3 -m pip install PyYAML==6.0.3
+          python3 tests/test_ingress.py

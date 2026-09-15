@@ -55,6 +55,60 @@ Create the name of the image pull secret
 {{- printf "%s-registry-secret" (include "aviso-server.fullname" .) }}
 {{- end }}
 
+{{/* Validate the ingress contract even when disabled or base_url is overridden. */}}
+{{- define "aviso-server.validateIngress" -}}
+{{- $i := .Values.ingress -}}
+{{- if not (kindIs "map" $i) -}}{{ fail "ingress must be a map" }}{{- end -}}
+{{- if hasKey $i "hosts" -}}{{ fail "ingress.hosts is no longer supported; use ingress.hostPrefix, ingress.domain and ingress.paths" }}{{- end -}}
+{{- if not (kindIs "bool" $i.enabled) -}}{{ fail "ingress.enabled must be a boolean" }}{{- end -}}
+{{- if not (kindIs "map" $i.tls) -}}{{ fail "ingress.tls must be a map with enabled and secretName; TLS lists are no longer supported" }}{{- end -}}
+{{- if not (kindIs "bool" $i.tls.enabled) -}}{{ fail "ingress.tls.enabled must be a boolean" }}{{- end -}}
+{{- if not (kindIs "string" $i.tls.secretName) -}}{{ fail "ingress.tls.secretName must be a string" }}{{- end -}}
+{{- if and $i.tls.enabled (empty (trim $i.tls.secretName)) -}}{{ fail "ingress.tls.secretName is required when ingress.tls.enabled is true" }}{{- end -}}
+{{- range $key := list "hostPrefix" "domain" -}}
+  {{- $value := index $i $key -}}
+  {{- if not (kindIs "string" $value) -}}{{ fail (printf "ingress.%s must be a string" $key) }}{{- end -}}
+  {{- if or $i.enabled (ne $value "") -}}
+    {{- include "aviso-server.validateDNS" (dict "name" (printf "ingress.%s" $key) "value" $value) -}}
+  {{- end -}}
+{{- end -}}
+{{- if $i.enabled -}}
+  {{- include "aviso-server.validateDNS" (dict "name" "composed ingress hostname" "value" (include "aviso-server.ingressHost" .)) -}}
+{{- end -}}
+{{- if not (kindIs "slice" $i.paths) -}}{{ fail "ingress.paths must be a nonempty list" }}{{- end -}}
+{{- if empty $i.paths -}}{{ fail "ingress.paths must be a nonempty list" }}{{- end -}}
+{{- range $i.paths -}}
+  {{- if not (kindIs "map" .) -}}{{ fail "ingress.paths entries must be maps with path and pathType" }}{{- end -}}
+  {{- if not (kindIs "string" .path) -}}{{ fail "ingress.paths path must be an absolute path string" }}{{- end -}}
+  {{- if not (hasPrefix "/" .path) -}}{{ fail "ingress.paths path must be a nonempty absolute path starting with /" }}{{- end -}}
+  {{- if not (has .pathType (list "Prefix" "Exact" "ImplementationSpecific")) -}}{{ fail "ingress.paths pathType must be Prefix, Exact or ImplementationSpecific" }}{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/* DNS subdomains: ASCII lowercase labels, 63 bytes each, 253 total. */}}
+{{- define "aviso-server.validateDNS" -}}
+{{- if or (empty .value) (gt (len .value) 253) -}}{{ fail (printf "%s is required and must be a DNS name of at most 253 characters" .name) }}{{- end -}}
+{{- range splitList "." .value -}}
+  {{- if or (gt (len .) 63) (not (regexMatch "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$" .)) -}}
+    {{- fail (printf "%s must contain lowercase ASCII DNS labels (1-63 characters, letters/digits at each end); no scheme, port or path" $.name) -}}
+  {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "aviso-server.ingressHost" -}}
+{{- printf "%s.%s" .Values.ingress.hostPrefix .Values.ingress.domain -}}
+{{- end -}}
+
+{{- define "aviso-server.applicationBaseURL" -}}
+{{- if .Values.config.application.base_url -}}
+{{- .Values.config.application.base_url -}}
+{{- else if .Values.ingress.enabled -}}
+{{- printf "%s://%s" (ternary "https" "http" .Values.ingress.tls.enabled) (include "aviso-server.ingressHost" .) -}}
+{{- else -}}
+http://aviso-server
+{{- end -}}
+{{- end -}}
+
 {{/*
 Ingress annotations for aviso's long-lived SSE connections.
 

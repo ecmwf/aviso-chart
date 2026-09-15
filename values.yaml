@@ -70,11 +70,11 @@ affinity: {}
 # ingress:
 #   enabled: true
 #   className: nginx
-#   hosts:
-#     - host: aviso.example.com
-#       paths:
-#         - path: /
-#           pathType: Prefix
+#   hostPrefix: aviso.dev
+#   domain: example.com
+#   tls:
+#     enabled: true
+#     secretName: aviso-tls
 ingress:
   enabled: false
   className: ""
@@ -85,12 +85,17 @@ ingress:
     proxyBuffering: false
     proxyReadTimeoutSeconds: 3600
     proxySendTimeoutSeconds: 3600
-  hosts:
-    - host: aviso.local
-      paths:
-        - path: /
-          pathType: Prefix
-  tls: []
+  # Required when enabled. Both accept lowercase DNS labels separated by dots.
+  # The single public hostname is <hostPrefix>.<domain>.
+  hostPrefix: ""
+  domain: ""
+  paths:
+    - path: /
+      pathType: Prefix
+  tls:
+    enabled: false
+    # Existing TLS Secret; required when tls.enabled is true.
+    secretName: ""
 
 # Horizontal Pod Autoscaler. Disabled by default for predictable baseline behavior.
 autoscaling:
@@ -175,8 +180,10 @@ config:
   application:
     host: "0.0.0.0"
     port: 8000
-    # Used in generated CloudEvents source/schema URLs.
-    base_url: "http://aviso-server"
+    # Used in generated CloudEvents source/schema URLs. A nonempty override wins.
+    # Empty/omitted: ingress URL (https with TLS, otherwise http) when enabled;
+    # otherwise the historical internal default http://aviso-server (no port).
+    base_url: ""
     static_files_path: "/app/static"
     # Optional homepage link overrides (aviso-server >= 0.11.1).
     # Omitted fields use these server defaults; no override is required.
