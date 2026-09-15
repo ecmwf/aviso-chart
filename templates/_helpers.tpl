@@ -88,6 +88,16 @@ Create the name of the image pull secret
   {{- if not (kindIs "string" .path) -}}{{ fail "ingress.paths path must be an absolute path string" }}{{- end -}}
   {{- if not (hasPrefix "/" .path) -}}{{ fail "ingress.paths path must be a nonempty absolute path starting with /" }}{{- end -}}
   {{- if not (has .pathType (list "Prefix" "Exact" "ImplementationSpecific")) -}}{{ fail "ingress.paths pathType must be Prefix, Exact or ImplementationSpecific" }}{{- end -}}
+  {{- if has .pathType (list "Prefix" "Exact") -}}
+    {{/* Match Kubernetes path validation: /api/watch is valid; /api//watch is not. */}}
+    {{- $path := .path -}}
+    {{- range list "//" "/./" "/../" "%2f" "%2F" -}}
+      {{- if contains . $path -}}{{ fail (printf "ingress.paths path must not contain %s for Prefix or Exact" .) }}{{- end -}}
+    {{- end -}}
+    {{- range list "/.." "/." -}}
+      {{- if hasSuffix . $path -}}{{ fail (printf "ingress.paths path must not end with %s for Prefix or Exact" .) }}{{- end -}}
+    {{- end -}}
+  {{- end -}}
 {{- end -}}
 {{- end -}}
 

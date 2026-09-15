@@ -12,6 +12,8 @@ import yaml
 
 CHART = Path(__file__).resolve().parents[1]
 INGRESS = {"enabled": True, "hostPrefix": "aviso.dev", "domain": "example.com"}
+INVALID_EXACT_PREFIX_PATHS = ("/api//watch", "/./x", "/../x", "/api%2fwatch",
+                              "/api%2Fwatch", "/api/.", "/api/..", "/.", "/..")
 
 
 def helm(*args, values=None):
@@ -54,6 +56,16 @@ class IngressTest(unittest.TestCase):
                          ["aviso.dev.example.com"])
 
     def test_tls_paths_names_and_annotations(self):
+        for path_type in ("Prefix", "Exact", "ImplementationSpecific"):
+            paths = [{"path": path, "pathType": path_type}
+                     for path in ("/", "/api/", "/.well-known", "/v1.2", "/foo..bar")]
+            if path_type == "ImplementationSpecific":
+                paths.extend({"path": path, "pathType": path_type}
+                             for path in INVALID_EXACT_PREFIX_PATHS)
+            docs = self.render({"ingress": dict(INGRESS, paths=paths)})
+            actual = self.resource(docs, "Ingress")["spec"]["rules"][0]["http"]["paths"]
+            self.assertEqual([{"path": p["path"], "pathType": p["pathType"]}
+                              for p in actual], paths)
         for tls in (False, True):
             for controller, key, buffering, timeout in (
                 ("nginx-org", "nginx.org/", "false", "3600s"),
@@ -140,6 +152,10 @@ class IngressTest(unittest.TestCase):
                             "a.", "a..b", "a/b", "a b", "é", "a" * 254):
             cases.append(({"tls": {"enabled": True, "secretName": secret_name}},
                           "ingress.tls.secretName"))
+        for path_type in ("Prefix", "Exact"):
+            for path in INVALID_EXACT_PREFIX_PATHS:
+                cases.append(({"paths": [{"path": path, "pathType": path_type}]},
+                              "ingress.paths path"))
         for patch, message in cases:
             with self.subTest(patch=patch):
                 result = helm("template", "test", CHART, "-f", "-", values={
