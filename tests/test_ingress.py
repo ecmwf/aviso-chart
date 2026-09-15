@@ -101,6 +101,12 @@ class IngressTest(unittest.TestCase):
                              {"custom": "kept"})
 
     def test_dns_boundaries(self):
+        for secret_name in ("a", "test-tls.example", "a" * 64, "a" * 253):
+            with self.subTest(secretName=secret_name):
+                docs = self.render({"ingress": dict(
+                    INGRESS, tls={"enabled": True, "secretName": secret_name})})
+                self.assertEqual(self.resource(docs, "Ingress")["spec"]["tls"][0]
+                                 ["secretName"], secret_name)
         for host_prefix, domain in (("a", "b"), ("a-1.dev", "region.example.com"),
                                ("a" * 63, ".".join(["b" * 63, "c" * 63, "d" * 61]))):
             with self.subTest(hostPrefix=host_prefix, domain=domain):
@@ -130,6 +136,10 @@ class IngressTest(unittest.TestCase):
                           "a_b", "*.example", "http://example", "example:80", "a/b",
                           "a b", "a" * 64, 12, [], {}):
                 cases.append(({field: value}, f"ingress.{field}"))
+        for secret_name in ("INVALID NAME", "Uppercase", "a_b", "-a", "a-", ".a",
+                            "a.", "a..b", "a/b", "a b", "é", "a" * 254):
+            cases.append(({"tls": {"enabled": True, "secretName": secret_name}},
+                          "ingress.tls.secretName"))
         for patch, message in cases:
             with self.subTest(patch=patch):
                 result = helm("template", "test", CHART, "-f", "-", values={

@@ -65,6 +65,12 @@ Create the name of the image pull secret
 {{- if not (kindIs "bool" $i.tls.enabled) -}}{{ fail "ingress.tls.enabled must be a boolean" }}{{- end -}}
 {{- if not (kindIs "string" $i.tls.secretName) -}}{{ fail "ingress.tls.secretName must be a string" }}{{- end -}}
 {{- if and $i.tls.enabled (empty (trim $i.tls.secretName)) -}}{{ fail "ingress.tls.secretName is required when ingress.tls.enabled is true" }}{{- end -}}
+{{- if $i.tls.enabled -}}
+  {{/* Kubernetes Secret names allow 253 bytes total without a per-label limit: test.tls is valid; TEST_TLS is not. */}}
+  {{- if or (gt (len $i.tls.secretName) 253) (not (regexMatch "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$" $i.tls.secretName)) -}}
+    {{- fail "ingress.tls.secretName must be a lowercase RFC 1123 subdomain of at most 253 characters" -}}
+  {{- end -}}
+{{- end -}}
 {{- range $key := list "hostPrefix" "domain" -}}
   {{- $value := index $i $key -}}
   {{- if not (kindIs "string" $value) -}}{{ fail (printf "ingress.%s must be a string" $key) }}{{- end -}}
