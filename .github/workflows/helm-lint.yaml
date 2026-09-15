@@ -26,6 +26,9 @@ jobs:
       - name: Run Helm Lint on Chart
         run: helm lint .
 
+      - name: Check package contents
+        run: python3 tests/test_package.py
+
       - name: Run ingress render tests
         run: |
           python3 -m pip install PyYAML==6.0.3

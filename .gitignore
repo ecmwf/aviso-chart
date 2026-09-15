@@ -5,6 +5,8 @@
 # Helm test output and temp files
 /tests/*
 !/tests/test_ingress.py
+!/tests/test_package.py
+!/tests/package_chart.py
 /tmp/
 
 # MacOS-specific ignores
