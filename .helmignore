@@ -1,0 +1,28 @@
+# Helm uses filepath.Match patterns, not recursive ** globs.
+.git
+.github
+.gitignore
+.idea
+.vscode
+.env
+.env.*
+.venv
+venv
+__pycache__
+*.pyc
+*.tmp
+*.swp
+*~
+.kube
+kubeconfig
+kubeconfig.*
+private
+tmp
+temp
+.DS_Store
+dist
+build
+tests
+# Root packages only: retain the pinned dependency archives in charts/.
+/*.tgz
+/*.prov

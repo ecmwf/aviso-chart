@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Install Helm Toolchain
         uses: azure/setup-helm@v4
@@ -40,13 +42,19 @@ jobs:
           fi
           echo "EFFECTIVE_VERSION=$EFFECTIVE_VERSION" >> "$GITHUB_ENV"
 
-      - name: Update Chart Dependencies
-        run: helm dependency update .
+      - name: Build locked chart dependencies
+        run: |
+          helm repo add nats https://nats-io.github.io/k8s/helm/charts/
+          helm dependency build .
+
+      - name: Check package contents
+        run: python3 tests/test_package.py
 
       - name: Package Helm Chart
         run: |
           echo "Packaging chart with version $EFFECTIVE_VERSION"
-          helm package . --version "$EFFECTIVE_VERSION"
+          python3 tests/package_chart.py "$EFFECTIVE_VERSION"
+          python3 -c 'import sys; sys.path.insert(0, "tests"); from test_package import check_package; check_package(sys.argv[1])' "$CHART_NAME-$EFFECTIVE_VERSION.tgz"
 
       - name: Login to Harbor Registry (OCI)
         run: |

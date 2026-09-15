@@ -6,7 +6,7 @@ Helm chart for [`aviso-server`](https://github.com/ecmwf/aviso-server), ECMWF's 
 
 ```bash
 helm install aviso oci://eccr.ecmwf.int/aviso/aviso-chart \
-  --version 0.7.6 \
+  --version 0.8.1 \
   --namespace aviso \
   --create-namespace
 ```
@@ -61,7 +61,8 @@ uppercase letters and trailing dots are rejected. `ingress.paths` defaults to
 `[{path: /, pathType: Prefix}]` and must be nonempty; paths must start with `/`
 and types must be `Prefix`, `Exact` or `ImplementationSpecific`.
 
-**Migration:** the former `ingress.hosts` list and `ingress.tls` list are rejected
+**Migration (chart 0.8.1):** this configuration requires chart 0.8.1 or later.
+The former `ingress.hosts` list and `ingress.tls` list are rejected
 (including when ingress is disabled). Move paths to `ingress.paths`, split the
 hostname into `ingress.hostPrefix` and `ingress.domain`, and replace TLS with the
 map shown above. All overlays must use this new shape before rendering.
@@ -99,7 +100,7 @@ Entries in `ingress.annotations` always win on key collision.
 
 ### Homepage links
 
-Chart `0.7.6` uses `aviso-server` `0.11.1`. Homepage links default to the client and server documentation and repositories listed in the commented `config.application.homepage` block in [`values.yaml`](values.yaml). Omit this block to inherit the server defaults, or override only the links you need:
+Chart `0.8.1` uses `aviso-server` `0.12.0`. Homepage links default to the client and server documentation and repositories listed in the commented `config.application.homepage` block in [`values.yaml`](values.yaml). Omit this block to inherit the server defaults, or override only the links you need:
 
 ```yaml
 config:
@@ -232,11 +233,19 @@ helm template aviso . --kube-version 1.29
 helm template aviso . -f examples/values-auth-enabled.yaml
 python3 -m pip install PyYAML==6.0.3
 python3 tests/test_ingress.py
+python3 tests/test_package.py
 ```
 
 The render tests use Helm and PyYAML, synthetic values, and all six public
 example profiles. They also lint and render a temporary local package built
 from chart inputs only; no cluster or container images are required.
+
+The packaging tests also package the actual checkout (including its `.git`
+directory) and synthetic development files, checking exclusions and required
+chart inputs. Release packaging uses `python3 tests/package_chart.py 0.8.1`:
+`.helmignore` excludes local metadata and output, and the packaging step removes
+repository metadata embedded in upstream dependency archives before checking the
+final package. Dependency templates, values and versions are preserved.
 
 ## Related repositories
 
