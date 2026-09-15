@@ -1,3 +1,6 @@
+{{- include "aviso-server.validateIngress" . -}}
+{{- $config := deepCopy .Values.config -}}
+{{- $_ := set $config.application "base_url" (include "aviso-server.applicationBaseURL" .) -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,4 +9,4 @@ metadata:
     {{- include "aviso-server.labels" . | nindent 4 }}
 data:
   config.yaml: |
-    {{- toYaml .Values.config | nindent 4 }}
+    {{- toYaml $config | nindent 4 }}

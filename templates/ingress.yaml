@@ -1,4 +1,6 @@
+{{- include "aviso-server.validateIngress" . -}}
 {{- if .Values.ingress.enabled -}}
+{{- $host := include "aviso-server.ingressHost" . -}}
 {{- $fullName := include "aviso-server.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
 {{- $annotations := include "aviso-server.ingressAnnotations" . -}}
@@ -22,23 +24,18 @@ spec:
   {{- if and .Values.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
   ingressClassName: {{ .Values.ingress.className }}
   {{- end }}
-  {{- if .Values.ingress.tls }}
+  {{- if .Values.ingress.tls.enabled }}
   tls:
-    {{- range .Values.ingress.tls }}
     - hosts:
-        {{- range .hosts }}
-        - {{ . | quote }}
-        {{- end }}
-      secretName: {{ .secretName }}
-    {{- end }}
+        - {{ $host | quote }}
+      secretName: {{ .Values.ingress.tls.secretName | quote }}
   {{- end }}
   rules:
-    {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
+    - host: {{ $host | quote }}
       http:
         paths:
-          {{- range .paths }}
-          - path: {{ .path }}
+          {{- range .Values.ingress.paths }}
+          - path: {{ .path | quote }}
             {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
             pathType: {{ .pathType }}
             {{- end }}
@@ -53,5 +50,4 @@ spec:
               servicePort: {{ $svcPort }}
               {{- end }}
           {{- end }}
-    {{- end }}
 {{- end }}

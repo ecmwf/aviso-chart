@@ -28,6 +28,59 @@ Curated example profiles live under [`examples/`](examples):
 
 All operator-facing knobs are documented inline in [`values.yaml`](values.yaml). The high-level surfaces:
 
+### Single-host ingress and public URL
+
+Ingress is disabled by default. Enable it with a location/domain and an
+environment-specific prefix; the chart composes exactly one hostname:
+
+```yaml
+ingress:
+  enabled: true
+  className: nginx
+  hostPrefix: aviso.dev
+  domain: example.com
+  paths:
+    - path: /
+      pathType: Prefix
+  tls:
+    enabled: true
+    secretName: aviso-tls
+```
+
+This produces `aviso.dev.example.com` in both the ingress rule and TLS hosts,
+and `https://aviso.dev.example.com` in `config.application.base_url`. The TLS
+Secret must already exist in the release namespace. No Secret is created here.
+With `ingress.tls.enabled: false` (the default), no TLS block is emitted and the
+generated URL uses plain `http`.
+
+`ingress.hostPrefix` and `ingress.domain` default to empty strings and are required
+when ingress is enabled. Both support one or more dot-separated lowercase ASCII
+DNS labels: letters, digits and internal hyphens, at most 63 characters per
+label and 253 for the composed hostname. Schemes, ports, paths, wildcards,
+uppercase letters and trailing dots are rejected. `ingress.paths` defaults to
+`[{path: /, pathType: Prefix}]` and must be nonempty; paths must start with `/`
+and types must be `Prefix`, `Exact` or `ImplementationSpecific`.
+
+**Migration:** the former `ingress.hosts` list and `ingress.tls` list are rejected
+(including when ingress is disabled). Move paths to `ingress.paths`, split the
+hostname into `ingress.hostPrefix` and `ingress.domain`, and replace TLS with the
+map shown above. All overlays must use this new shape before rendering.
+
+`config.application.base_url` now defaults to `""`. Empty or omitted values use
+the generated ingress URL when enabled, or the historical `http://aviso-server`
+(no port) when disabled. A nonempty explicit override always wins, without
+changing the ingress hostname or TLS configuration:
+
+```yaml
+config:
+  application:
+    base_url: "https://public.example.com"
+```
+
+For TLS termination at an upstream gateway with ingress TLS disabled, set this
+override to the external HTTPS URL. Generated URLs contain no ingress path
+suffix. Values are used literally, without Helm `tpl` evaluation.
+
 ### Ingress streaming tuning
 
 `aviso-server`'s watch endpoint keeps SSE connections open for up to `config.watch_endpoint.connection_max_duration_sec` (default `3600s`). The chart's `ingress.streamingTuning` block emits the right proxy-buffering / read-timeout / send-timeout annotations for the chosen controller so SSE clients are not dropped mid-stream:
@@ -172,12 +225,18 @@ stream's schema. No image-tag change is needed.
 
 ```bash
 helm repo add nats https://nats-io.github.io/k8s/helm/charts/
-helm dependency update .
+helm dependency build .
 
 helm lint .
 helm template aviso . --kube-version 1.29
 helm template aviso . -f examples/values-auth-enabled.yaml
+python3 -m pip install PyYAML==6.0.3
+python3 tests/test_ingress.py
 ```
+
+The render tests use Helm and PyYAML, synthetic values, and all six public
+example profiles. They also lint and render a temporary local package built
+from chart inputs only; no cluster or container images are required.
 
 ## Related repositories
 
