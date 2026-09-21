@@ -1,0 +1,7 @@
+SPDX-FileCopyrightText: 2017-2023 The NATS Authors
+SPDX-FileCopyrightText: 2026 European Centre for Medium-Range Weather Forecasts (ECMWF)
+SPDX-License-Identifier: Apache-2.0
+
+Adapted from the prometheus-nats-exporter JetStream dashboard:
+https://github.com/nats-io/prometheus-nats-exporter/blob/main/walkthrough/grafana-jetstream-dash-helm.json
+See NOTICE for the list of ECMWF modifications.

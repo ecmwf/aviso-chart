@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 # Optional name overrides. Leave empty for release-based naming.
 nameOverride: ""
 fullnameOverride: ""
@@ -247,7 +250,7 @@ config:
   # Authentication and authorization (disabled by default).
   # When enabled, admin endpoints always require auth + admin_roles.
   # Stream endpoints enforce auth only when the schema sets auth.required: true.
-  # jwt_secret must be injected via extraEnv (AVISOSERVER_AUTH__JWT_SECRET) — not here.
+  # jwt_secret must be injected via extraEnv (AVISOSERVER_AUTH__JWT_SECRET), not here.
   # Example override:
   # auth:
   #   enabled: true
