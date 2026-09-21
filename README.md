@@ -86,14 +86,8 @@ uppercase letters and trailing dots are rejected. `ingress.paths` defaults to
 `[{path: /, pathType: Prefix}]` and must be nonempty; paths must start with `/`
 and types must be `Prefix`, `Exact` or `ImplementationSpecific`.
 
-**Migration (chart 0.8.1):** this configuration requires chart 0.8.1 or later.
-The former `ingress.hosts` list and `ingress.tls` list are rejected
-(including when ingress is disabled). Move paths to `ingress.paths`, split the
-hostname into `ingress.hostPrefix` and `ingress.domain`, and replace TLS with the
-map shown above. All overlays must use this new shape before rendering.
-
-`config.application.base_url` now defaults to `""`. Empty or omitted values use
-the generated ingress URL when enabled, or the historical `http://aviso-server`
+`config.application.base_url` defaults to `""`. Empty or omitted values use
+the generated ingress URL when enabled, or the in-cluster `http://aviso-server`
 (no port) when disabled. A nonempty explicit override always wins, without
 changing the ingress hostname or TLS configuration:
 
