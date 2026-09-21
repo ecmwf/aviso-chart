@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2026 European Centre for Medium-Range Weather Forecasts (ECMWF)
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # aviso-chart
 
 Helm chart for [`aviso-server`](https://github.com/ecmwf/aviso-server), ECMWF's streaming notification service. Publishes to `oci://eccr.ecmwf.int/aviso/aviso-chart`.

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 apiVersion: v2
 name: aviso-chart
 description: A Helm chart for Aviso Server - streaming notification service

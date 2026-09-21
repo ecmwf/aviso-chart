@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 # Bundled official NATS subchart profile for local/dev environments.
 # Replace RELEASE_NAME in nats_url with your Helm release name.
 
