@@ -3,6 +3,26 @@ SPDX-FileCopyrightText: 2026 European Centre for Medium-Range Weather Forecasts 
 SPDX-License-Identifier: Apache-2.0
 -->
 
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ecmwf/logos/cde127b2c872e88474570a681e56b14cdecf4f03/logos/aviso/aviso_text_dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/ecmwf/logos/cde127b2c872e88474570a681e56b14cdecf4f03/logos/aviso/aviso_text_light.svg">
+    <img alt="Aviso Logo" src="https://raw.githubusercontent.com/ecmwf/logos/cde127b2c872e88474570a681e56b14cdecf4f03/logos/aviso/aviso_text_light.svg">
+  </picture>
+</div>
+
+<p align="center">
+  <a href="https://github.com/ecmwf/codex/raw/refs/heads/main/ESEE">
+    <img src="https://github.com/ecmwf/codex/raw/refs/heads/main/ESEE/foundation_badge.svg" alt="Foundation Badge">
+  </a>
+  <a href="https://github.com/ecmwf/codex/raw/refs/heads/main/Project%20Maturity">
+    <img src="https://github.com/ecmwf/codex/raw/refs/heads/main/Project%20Maturity/emerging_badge.svg" alt="Maturity Badge">
+  </a>
+</p>
+
+> [!IMPORTANT]
+> This software is **Emerging** and subject to ECMWF's guidelines on [Software Maturity](https://github.com/ecmwf/codex/raw/refs/heads/main/Project%20Maturity).
+
 # aviso-chart
 
 Helm chart for [`aviso-server`](https://github.com/ecmwf/aviso-server), ECMWF's streaming notification service. Publishes to `oci://eccr.ecmwf.int/aviso/aviso-chart`.
@@ -257,3 +277,11 @@ final package. Dependency templates, values and versions are preserved.
 - [`ecmwf/aviso-server`](https://github.com/ecmwf/aviso-server): server binary, configuration reference, ECPDS runbook.
 - [`ecmwf/aviso-config`](https://github.com/ecmwf/aviso-config): production overlays applied on top of this chart.
 - [`ecmwf/auth-o-tron-chart`](https://github.com/ecmwf/auth-o-tron-chart): bundled authentication subchart.
+
+## License
+
+[Apache License 2.0](LICENSE)
+
+In applying this licence, ECMWF does not waive the privileges and immunities
+granted to it by virtue of its status as an intergovernmental organisation
+nor does it submit to any jurisdiction.

@@ -12,7 +12,7 @@ keywords:
   - streaming
   - sse
   - rust
-icon: https://github.com/ecmwf/logos/blob/main/logos/aviso/aviso_light.svg
+icon: https://raw.githubusercontent.com/ecmwf/logos/cde127b2c872e88474570a681e56b14cdecf4f03/logos/aviso/aviso_light.svg
 
 maintainers:
   - name: Samet Demir
