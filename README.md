@@ -185,11 +185,82 @@ metrics:
 
 `config.metrics.host` defaults to `"0.0.0.0"` (server-side default is `127.0.0.1`, which would silently break in-cluster scraping).
 
-### Grafana dashboard
+### Grafana dashboards
 
-This repo version-controls a ready-made dashboard at [`dashboards/aviso-server.json`](dashboards/aviso-server.json): an on-call overview row (scrape health, pods by version, traffic, 5xx ratio, p99, active SSE), a capacity/bottleneck row (per-pod request rate and p99, HTTP in-flight by method, backend operation latency/error ratio), API RED panels, notifications and SSE delivery, auth/ECPDS, per-pod runtime panels, and a collapsed cluster row (HPA replicas, CPU throttling, memory-vs-limit — requires kube-state-metrics/cAdvisor), with deploy annotations driven by `aviso_build_info`. It is not deployed by the chart: import the JSON into Grafana manually (Dashboards > Import). Panels bind to `datasource`/`namespace`/`job` template variables, so one import serves multiple aviso environments scraped by the same Prometheus. Metric labels use `route` (not `endpoint`) to avoid colliding with the Prometheus Operator target label `endpoint`. The JSON passes [`grafana/dashboard-linter`](https://github.com/grafana/dashboard-linter) with the reasoned exclusions in [`dashboards/.lint`](dashboards/.lint); update it in lockstep with metric changes in new `appVersion`s.
+Two dashboards are version-controlled here. Neither is deployed by the chart:
+import the JSON into Grafana manually (Dashboards > Import). Both bind their
+panels to `datasource` and `namespace` template variables, so a single import
+serves every Aviso environment scraped by the same Prometheus.
 
-A companion NATS/JetStream dashboard lives at [`dashboards/nats-jetstream.json`](dashboards/nats-jetstream.json) (server, stream, consumer, JetStream API in-flight/errors and storage panels, plus a Resources & Storage row). It is adapted from the [official `nats-io/prometheus-nats-exporter` JetStream dashboard](https://github.com/nats-io/prometheus-nats-exporter/blob/main/walkthrough/grafana-jetstream-dash-helm.json): the upstream export ships with a `${DS__NATS-PROMETHEUS}` `__inputs` datasource constant that does not rebind on import into recent Grafana (variables silently return nothing, and panels — which carry no datasource of their own — fall back to the default datasource and show no data). This copy replaces it with a standard `datasource` template variable and binds every panel/target to it. It adds a `namespace` template variable (queries scoped by `namespace=~"$namespace"`) so one import serves multiple environments. It expects the `nats_` metric prefix (set `nats.promExporter` with `-prefix=nats`, `-jsz=all` in the NATS subchart) — *not* the `gnatsd_` prefix or nats-surveyor naming that most grafana.com NATS dashboards target. The `consumer` variable and consumer panels populate only while consumers exist; aviso uses ephemeral consumers, so they are empty unless a `watch`/`replay` stream is active. The JetStream memory panels were removed because this deployment uses file storage only (`max_memory=0`); the Resources & Storage row (PVC used vs capacity, CPU/memory vs limit, CPU throttling, network I/O, restarts) is sourced from kube-state-metrics, cAdvisor, and kubelet volume stats, scoped to `pod=~"aviso-nats.*"`.
+#### Aviso Server
+
+[`dashboards/aviso-server.json`](dashboards/aviso-server.json)
+
+| Row | Panels |
+|---|---|
+| Overview | Scrape targets up, pods by version, request rate, 5xx ratio, p99 latency (non-SSE), SSE connections active. |
+| Capacity & Bottleneck | Request rate and p99 latency per pod, HTTP in flight by method, backend operation latency p99, backend operations by outcome and error ratio. |
+| API (RED) | Request rate, error ratio and p99 latency by route, requests by status code, 4xx/5xx by route, SSE stream setup latency p99. |
+| Notifications & SSE | Notifications processed by stream, notification failures, SSE events delivered, connections active, unique users, connection duration, stream errors. |
+| Auth & ECPDS | Auth outcomes, ECPDS access decisions, upstream fetches, cache hit ratio and cache size. |
+| Runtime | CPU, resident memory and open file descriptors per pod. |
+| Cluster (collapsed) | HPA replicas, CPU throttling ratio per pod, memory working set vs limit. Requires kube-state-metrics and cAdvisor. |
+
+Deploy annotations are driven by `aviso_build_info`. Panels also bind a `job`
+variable alongside `datasource` and `namespace`.
+
+Metric labels use `route` rather than `endpoint`, which would collide with the
+Prometheus Operator target label of the same name.
+
+The JSON passes [`grafana/dashboard-linter`](https://github.com/grafana/dashboard-linter)
+with the reasoned exclusions in [`dashboards/.lint`](dashboards/.lint). Update
+it in lockstep with metric changes in new `appVersion`s.
+
+#### Aviso NATS / JetStream
+
+[`dashboards/nats-jetstream.json`](dashboards/nats-jetstream.json)
+
+Covers JetStream storage and connection health, per-stream and per-consumer
+throughput, and pod-level resource usage.
+
+| Row | Panels |
+|---|---|
+| Top-level | Storage used, total storage used, connections, max storage, total consumers. |
+| Stream metrics | Stream data size, stream message count, message rate per second. |
+| Consumer Metrics | Messages per second, total delivered messages, pending messages, message acks pending. |
+| Resources & Storage | JetStream PVC used vs capacity, CPU usage, memory working set vs limit, CPU throttling ratio, network I/O, restarts and ready replicas. |
+
+Beyond `datasource` and `namespace`, it exposes `server`, `stream` and
+`consumer` variables.
+
+It is adapted from the [official `nats-io/prometheus-nats-exporter` JetStream
+dashboard](https://github.com/nats-io/prometheus-nats-exporter/blob/main/walkthrough/grafana-jetstream-dash-helm.json);
+see [`NOTICE`](NOTICE) for the attribution. The changes made here are:
+
+- **Datasource rebinding.** The upstream export ships a
+  `${DS__NATS-PROMETHEUS}` `__inputs` constant that does not rebind on import
+  into recent Grafana: variables silently return nothing, and panels, which
+  carry no datasource of their own, fall back to the default datasource and
+  show no data. This copy uses a standard `datasource` template variable bound
+  to every panel and target.
+- **Namespace scoping.** Adds a `namespace` template variable and scopes every
+  query with `namespace=~"$namespace"`.
+- **JetStream memory panels removed.** This deployment uses file storage only
+  (`max_memory=0`), so those panels were always empty.
+- **Resources & Storage row added.** PVC used vs capacity, CPU and memory vs
+  limit, CPU throttling, network I/O, and restarts, sourced from
+  kube-state-metrics, cAdvisor and kubelet volume stats, scoped to
+  `pod=~"aviso-nats.*"`.
+
+Two things to be aware of when importing it:
+
+- It expects the `nats_` metric prefix, so set `nats.promExporter` with
+  `-prefix=nats` and `-jsz=all` in the NATS subchart. This is *not* the
+  `gnatsd_` prefix or the nats-surveyor naming that most grafana.com NATS
+  dashboards target.
+- The `consumer` variable and the consumer panels populate only while consumers
+  exist. Aviso uses ephemeral consumers, so they stay empty unless a `watch` or
+  `replay` stream is active.
 
 ### ECPDS destination-authorization plugin
 
