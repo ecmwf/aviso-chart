@@ -31,7 +31,7 @@ Helm chart for [`aviso-server`](https://github.com/ecmwf/aviso-server), ECMWF's 
 
 ```bash
 helm install aviso oci://eccr.ecmwf.int/aviso/aviso-chart \
-  --version 0.8.1 \
+  --version 0.8.2 \
   --namespace aviso \
   --create-namespace
 ```
@@ -119,7 +119,7 @@ Entries in `ingress.annotations` always win on key collision.
 
 ### Homepage links
 
-Chart `0.8.1` uses `aviso-server` `0.12.0`. Homepage links default to the client and server documentation and repositories listed in the commented `config.application.homepage` block in [`values.yaml`](values.yaml). Omit this block to inherit the server defaults, or override only the links you need:
+Chart `0.8.2` uses `aviso-server` `0.13.0`. Homepage links default to the client and server documentation and repositories listed in the commented `config.application.homepage` block in [`values.yaml`](values.yaml). Omit this block to inherit the server defaults, or override only the links you need:
 
 ```yaml
 config:
@@ -332,7 +332,7 @@ from chart inputs only; no cluster or container images are required.
 
 The packaging tests also package the actual checkout (including its `.git`
 directory) and synthetic development files, checking exclusions and required
-chart inputs. Release packaging uses `python3 tests/package_chart.py 0.8.1`:
+chart inputs. Release packaging uses `python3 tests/package_chart.py 0.8.2`:
 `.helmignore` excludes local metadata and output, and the packaging step removes
 repository metadata embedded in upstream dependency archives before checking the
 final package. Dependency templates, values and versions are preserved.
